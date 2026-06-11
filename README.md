@@ -1,5 +1,5 @@
-# COURSENAME
-This is the repository for the LinkedIn Learning course `course-name`. The full course is available from [LinkedIn Learning][lil-course-url].
+# Build Multi‑Agent Systems with n8n: Orchestrating Reliable AI Workflows
+This is the repository for the LinkedIn Learning course `Build Multi‑Agent Systems with n8n: Orchestrating Reliable AI Workflows`. The full course is available from [LinkedIn Learning][lil-course-url].
 
 ![lil-thumbnail-url]
 
