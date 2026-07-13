@@ -32,6 +32,13 @@ Research question:
 """
 ```
 
+Findings gathered so far:
+"""
+{{ $json.output }}
+"""
+```
+
+
 System Message:
 ```
 You are a critique agent.
