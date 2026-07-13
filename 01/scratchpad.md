@@ -30,7 +30,6 @@ Research question:
 """
 {{ $('Define Research Query').item.json.query }}
 """
-```
 
 Findings gathered so far:
 """
