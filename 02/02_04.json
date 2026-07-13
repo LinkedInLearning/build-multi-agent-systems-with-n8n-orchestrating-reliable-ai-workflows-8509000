@@ -1,0 +1,644 @@
+{
+  "name": "02_04",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c4df657e-0dee-4c45-a106-4a9cad42e605",
+      "name": "Start Research",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research question:\n```\n{{ $('Define Research Query').item.json.query }}\n```\n\nFindings gathered so far\n```\n{{ $json.output }}\n{{ $('Define Research Query').item.json.findings }}\n```",
+        "options": {
+          "systemMessage": "You are a critique agent.\n\nYour job is to determine whether the research question has been fully answered by the findings gathered so far.\n\nYou must perform tool-based verification before returning your verdict.\n\nInputs:\n- Research question: {{research_question}}\n- Findings gathered so far: {{findings}}\n\nRequired process:\n1. Use web search to fact-check all factual claims in the findings that are relevant to the research question.\n2. Use List files to check whether relevant internal files are available.\n3. If relevant internal files are available, use File Q&A on the relevant file(s) before deciding.\n4. Compare the verified evidence against the research question.\n5. Decide whether the findings fully answer the research question.\n\nRules:\n- Set \"done\" to true only if the findings completely answer the research question and the key factual claims are verified.\n- Set \"done\" to false if the answer is incomplete, unclear, unsupported, contradicted by sources, or missing important information.\n- If you cannot verify an important claim, set \"done\" to false.\n- Use \"gaps\" to briefly describe what is missing or still needs research.\n- Use \"reasoning\" to briefly explain your verdict.\n- Do not rely only on the provided findings unless tool use is impossible.\n\nReturn only valid JSON in this exact format:\n\n{\n  \"done\": false,\n  \"gaps\": \"\",\n  \"reasoning\": \"\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2592,
+        2272
+      ],
+      "id": "9a74cfd4-bf10-41e4-8869-f0c7afbf45fc",
+      "name": "Critique Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "low"
+          }
+        },
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "critique_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"done\", \"gaps\", \"reasoning\"],\n  \"properties\": {\n    \"done\": {\n      \"type\": \"boolean\",\n      \"description\": \"True if the findings completely answer the research question; false otherwise.\"\n    },\n    \"gaps\": {\n      \"type\": \"string\",\n      \"description\": \"Briefly describe what is missing, unclear, unsupported, or still needs research. Use an empty string if there are no gaps.\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\": \"Brief explanation of why the answer is complete or incomplete.\"\n    }\n  }\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2576,
+        2496
+      ],
+      "id": "bcef0b3d-b47c-4eaf-8305-ee5e0a94512b",
+      "name": "Critique Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vIt4XIujtaBmV5aq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "low"
+          }
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2160,
+        2496
+      ],
+      "id": "d1bf32d2-8f4b-49c0-a09d-211b0d1235f7",
+      "name": "Web Search Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vIt4XIujtaBmV5aq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "q-0001",
+              "name": "query",
+              "value": "What was our internal assessment of Disney in Q1/25 and how does it compare to the reported Q1/26?",
+              "type": "string"
+            },
+            {
+              "id": "cb1a3c46-eeef-4f28-bbc9-627ea86a1baf",
+              "name": "findings",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "1c8aa797-f757-4e0a-94d9-8b6f305f663b",
+              "name": "gaps",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "f3f705f5-c8be-40de-87f0-dd747b523287",
+              "name": "round",
+              "value": 0,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9e73747f-a04d-461c-8292-3a43c2a56e9c",
+      "name": "Define Research Query",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1792,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2928,
+        2272
+      ],
+      "id": "06f4fd72-3279-4f10-91b3-ad634187f409",
+      "name": "Parse Verdict"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research question: {{ $json.query }}\n\nPrevious findings: \n{{ $json.findings}}\n\nPrevious gaps:\n{{ $json.gaps }}\n",
+        "options": {
+          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, you have access to the following tools:\n- Web search: search the web for real-time answers\n- List files: see which internal files are available\n- File Q&A: Given a download URL (incl. token) you can ask a question against that file by making a call to an OpenAI API\n\nAnswer in a short, concise way."
+        }
+      },
+      "id": "0b1d2659-957e-46b1-9eea-a403ba523a37",
+      "name": "Research",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2256,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "q-0001",
+              "name": "query",
+              "value": "={{ $('Round Start').item.json.query }}",
+              "type": "string"
+            },
+            {
+              "id": "q-0002",
+              "name": "round",
+              "value": "={{ $('Round Start').item.json.round + 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "q-0003",
+              "name": "findings",
+              "value": "=Round {{ $('Round Start').item.json.round }} Findings:\n==================\n{{ $('Research').item.json.output }}\n\n{{ $('Round Start').item.json.findings }}",
+              "type": "string"
+            },
+            {
+              "id": "q-0004",
+              "name": "gaps",
+              "value": "={{ $('Parse Verdict').item.json.gaps }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e70ce227-e28e-49d2-a4c9-9846e70485ac",
+      "name": "Updated Research Query",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3456,
+        2448
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        2272
+      ],
+      "id": "61137103-b49b-4d88-a61a-6838c6228db3",
+      "name": "Round Start"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "if-done",
+              "leftValue": "={{ $json.done }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "060292e1-cf2c-4d06-93ae-007f9532cb34",
+      "name": "Done?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3168,
+        2272
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "13bda4ef-4a25-4cb9-8cd4-cf8024f4a475",
+              "name": "output",
+              "value": "={{ $('Research').item.json.output\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3440,
+        2176
+      ],
+      "id": "b0076599-70e5-4aa1-bf14-00f6a0124692",
+      "name": "Output"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "List available internal files",
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "tobiaszwingmann",
+          "mode": "list",
+          "cachedResultName": "tobiaszwingmann",
+          "cachedResultUrl": "https://github.com/tobiaszwingmann"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000",
+          "mode": "name"
+        },
+        "filePath": "documents/"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        2304,
+        2496
+      ],
+      "id": "22d0197c-9663-44cd-820f-5cc0a45443d7",
+      "name": "List Files",
+      "webhookId": "c7334a0f-1f43-4ce0-b884-39632a235604",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "uj6ICrWupTmCdWut",
+          "name": "GitHub account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link including token. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "F8G715YMeX4SXbIL",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/F8G715YMeX4SXbIL",
+          "cachedResultName": "LiL Multi-Agent – Tool: File Q&A with OpenAI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "download_url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('download_url', ``, 'string') }}",
+            "question": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('question', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "download_url",
+              "displayName": "download_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2416,
+        2496
+      ],
+      "id": "a94f2a68-33d2-47c0-be1a-55264f10893b",
+      "name": "File Q&A"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "List available internal files",
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "tobiaszwingmann",
+          "mode": "list",
+          "cachedResultName": "tobiaszwingmann",
+          "cachedResultUrl": "https://github.com/tobiaszwingmann"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000",
+          "mode": "name"
+        },
+        "filePath": "documents/"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        2688,
+        2496
+      ],
+      "id": "028051cd-bb8c-4374-aaf6-2a3675cbd084",
+      "name": "List Files1",
+      "webhookId": "c7334a0f-1f43-4ce0-b884-39632a235604",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "uj6ICrWupTmCdWut",
+          "name": "GitHub account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link including token. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "F8G715YMeX4SXbIL",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/F8G715YMeX4SXbIL",
+          "cachedResultName": "LiL Multi-Agent – Tool: File Q&A with OpenAI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "download_url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('download_url', ``, 'string') }}",
+            "question": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('question', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "download_url",
+              "displayName": "download_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        2800,
+        2496
+      ],
+      "id": "6e8d7476-f1a5-49f7-8bf9-1d5f9162b274",
+      "name": "File Q&A1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start Research": {
+      "main": [
+        [
+          {
+            "node": "Define Research Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critique Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Verdict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critique Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Search Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define Research Query": {
+      "main": [
+        [
+          {
+            "node": "Round Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research": {
+      "main": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Verdict": {
+      "main": [
+        [
+          {
+            "node": "Done?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Round Start": {
+      "main": [
+        [
+          {
+            "node": "Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updated Research Query": {
+      "main": [
+        [
+          {
+            "node": "Round Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Done?": {
+      "main": [
+        [
+          {
+            "node": "Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Updated Research Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output": {
+      "main": [
+        []
+      ]
+    },
+    "List Files": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Q&A": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Q&A1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Files1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0d58e27d-6f2d-4a30-8d04-a713a7c30c82",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "94e1edcc34a91a151fc2ec1b99597068a304e37fdb946fc806f00f97776fce3a"
+  },
+  "nodeGroups": [],
+  "id": "sPnCKH4HrZAOYd9P",
+  "tags": []
+}
