@@ -4,7 +4,7 @@
 
 ## 2.3 Upgrade the Search Agent with a File Q&A Tool
 
-**Research” Agent**
+**Research Agent**
 System message:
 ```
 You are a research agent running ONE round of a larger research process
