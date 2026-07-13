@@ -30,7 +30,10 @@ List available internal files
 - Resource: `File`
 - Operation: `List`
 - Repository Owner: `YOUR NAME` or `LinkedIn Learning`
-- Repository Name: `build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000`
+- Repository Name:
+```
+build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000`
+```
 - Path: `documents/`
 
 **Call n8n Workflow**
