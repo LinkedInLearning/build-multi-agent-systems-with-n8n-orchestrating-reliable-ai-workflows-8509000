@@ -1,5 +1,5 @@
 {
-  "name": "File Q&A tool with OpenAI",
+  "name": "02_02 File Q&A Tool",
   "nodes": [
     {
       "parameters": {
@@ -17,10 +17,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.2,
       "position": [
-        -240,
+        320,
         0
       ],
-      "id": "77507e47-c33e-4fac-9941-b7ff56294f46",
+      "id": "9d570a4a-3e99-42fc-b5b2-a49748ebb8a6",
       "name": "When Executed by Another Workflow"
     },
     {
@@ -31,16 +31,16 @@
         "nodeCredentialType": "openAiApi",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"input\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"input_text\",\n          \"text\": \"{{ $json.question }}. Present your answer in short bullet points with 15 words max. per bullet.\"\n        },\n        {\n          \"type\": \"input_file\",\n          \"file_url\": \"{{ $json.download_url }}\"\n        }\n      ]\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"model\": \"gpt-5-mini\",\n  \"input\": [\n    {\n      \"role\": \"user\",\n      \"content\": [\n        {\n          \"type\": \"input_text\",\n          \"text\": \"{{ $json.question.toJsonString().slice(1, -1) }}. \\n\\n\\n Present your answer in short bullet points with 15 words max. per bullet.\"\n        },\n        {\n          \"type\": \"input_file\",\n          \"file_url\": \"{{ $json.download_url.extractUrl() }}\"\n        }\n      ]\n    }\n  ]\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -16,
+        544,
         0
       ],
-      "id": "e6088585-3626-45b9-a24d-14185e831a68",
+      "id": "3dc9f506-6fc6-43a6-a6dc-2da82cc6268e",
       "name": "HTTP Request",
       "credentials": {
         "openAiApi": {
@@ -72,10 +72,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        192,
+        752,
         0
       ],
-      "id": "a42eb7c9-b7d9-4ec7-93ea-7633a37edd8b",
+      "id": "f107aa48-630d-4782-be75-fd4f60fa8136",
       "name": "Output"
     }
   ],
@@ -119,7 +119,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "012f7eec-4e35-4007-9c3d-920e39b0d913",
+  "versionId": "56d5f34e-472e-4a5d-9f93-11ddda74c149",
   "meta": {
     "instanceId": "94e1edcc34a91a151fc2ec1b99597068a304e37fdb946fc806f00f97776fce3a"
   },
