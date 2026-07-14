@@ -1,0 +1,1010 @@
+{
+  "name": "04_04 Form",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -64
+      ],
+      "id": "e7ada787-bfd5-4bba-becd-d1738fdd5129",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39de528b-0b4b-4247-985a-078e3062f1ad",
+              "name": "query",
+              "value": "={{ $json['Research query'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0662139b-b10b-4991-b1de-8fd4c1f1697c",
+              "name": "round",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "08f699d5-7f5b-4a58-bfb7-f58772e11b9e",
+              "name": "findings",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        64
+      ],
+      "id": "453435c2-f1b7-4dc5-bd02-5746ac7dd8ca",
+      "name": "Define Research Query"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research question: {{ $json.query }}\n\nPrevious findings: \n{{ $json.findings}}\n\nPrevious gaps:\n{{ $json.gaps }}",
+        "options": {
+          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, coordinate the following specialist sub-agents available to you as tools:\n- Web Search Agent – open web (LLM-based). Use for real-time, external information search.\n- File Research Agent – Access to internal documents (e.g., analyst notes). Use for internal information requests.\n\nAnswer in a short, concise way."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        592,
+        -112
+      ],
+      "id": "f62eb282-894b-455c-a9da-97e4729d4a37",
+      "name": "Research",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research question:\n\"\"\"\n{{ $('Define Research Query').item.json.query }}\n\"\"\"\n\nFindings gathered so far\n\"\"\"\n{{ $json.output }}\n{{ $('Define Research Query').item.json.findings }}\n\"\"\"",
+        "options": {
+          "systemMessage": "You are a critique agent.\n\nYour job is to determine whether the research question has been fully answered by the findings gathered so far.\n\nYou must perform tool-based verification before returning your verdict.\n\nInputs:\n- Research question: {{research_question}}\n- Findings gathered so far: {{findings}}\n\nRequired process:\n1. Use web search to fact-check all factual claims in the findings that are relevant to the research question.\n2. Use List files to check whether relevant internal files are available.\n3. If relevant internal files are available, use File Q&A on the relevant file(s) before deciding.\n4. Compare the verified evidence against the research question.\n5. Decide whether the findings fully answer the research question.\n\nRules:\n- Set \"done\" to true only if the findings completely answer the research question and the key factual claims are verified.\n- Set \"done\" to false if the answer is incomplete, unclear, unsupported, contradicted by sources, or missing important information.\n- If you cannot verify an important claim, set \"done\" to false.\n- Use \"gaps\" to briefly describe what is missing or still needs research.\n- Use \"reasoning\" to briefly explain your verdict.\n- Do not rely only on the provided findings unless tool use is impossible.\n\nReturn only valid JSON in this exact format:\n\n{\n  \"done\": false,\n  \"gaps\": \"\",\n  \"reasoning\": \"\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1344,
+        -112
+      ],
+      "id": "3a9bc294-fb2f-4a7d-a539-43ba69788b09",
+      "name": "Critique Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "low"
+          }
+        },
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "critique_schema",
+              "schema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"done\", \"gaps\", \"reasoning\"],\n  \"properties\": {\n    \"done\": {\n      \"type\": \"boolean\",\n      \"description\": \"True if the findings completely answer the research question; false otherwise.\"\n    },\n    \"gaps\": {\n      \"type\": \"string\",\n      \"description\": \"Briefly describe what is missing, unclear, unsupported, or still needs research. Use an empty string if there are no gaps.\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\": \"Brief explanation of why the answer is complete or incomplete.\"\n    }\n  }\n}"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        112
+      ],
+      "id": "93acf2cf-0c99-4504-a5ca-b26fd27afd5a",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1744,
+        -112
+      ],
+      "id": "14694a80-6fc1-462c-9e89-11be5a93130c",
+      "name": "Parse Verdict"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9171a0b6-cdc9-434a-b65b-d81aa7315e63",
+              "leftValue": "={{ $json.done }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "3407ae77-8245-4211-a01f-baf0205190c7",
+              "leftValue": "={{ $('Round Start').item.json.round }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1968,
+        -112
+      ],
+      "id": "ed02fa1b-26e5-4422-838c-f4b59ab0da87",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        224,
+        64
+      ],
+      "id": "45a36e91-29b7-4df5-a179-db793a987961",
+      "name": "Round Start"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca6f87ab-30ca-47ae-b674-656c12bd8ddf",
+              "name": "output",
+              "value": "={{ $('Research').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2192,
+        -160
+      ],
+      "id": "9bb94d18-584e-48b8-8389-552813bc39f2",
+      "name": "Output"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f86da81-4ff6-4a01-904d-31d2b71571e1",
+              "name": "query",
+              "value": "={{ $('Round Start').item.json.query }}",
+              "type": "string"
+            },
+            {
+              "id": "7819c156-f6d7-4b9c-973e-a3879712f171",
+              "name": "round",
+              "value": "={{ $('Round Start').item.json.round + 1 }}",
+              "type": "string"
+            },
+            {
+              "id": "f7f97006-748c-4b6b-94bc-09633127a330",
+              "name": "findings",
+              "value": "=Round {{ $('Round Start').item.json.round }} Findings:\n==================\n{{ $('Research').item.json.output }}\n\n{{ $('Round Start').item.json.findings }}",
+              "type": "string"
+            },
+            {
+              "id": "d0535676-5fed-427c-961d-c473d7c57b97",
+              "name": "gaps",
+              "value": "={{ $('Parse Verdict').item.json.gaps }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2192,
+        192
+      ],
+      "id": "dd3a21d5-1101-45d9-b4d0-a586552ac199",
+      "name": "Updated Research Query"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "List available internal files",
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "tobiaszwingmann",
+          "mode": "list",
+          "cachedResultName": "tobiaszwingmann",
+          "cachedResultUrl": "https://github.com/tobiaszwingmann"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000",
+          "mode": "name"
+        },
+        "filePath": "documents/"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        320
+      ],
+      "id": "f4525658-41c9-4161-beb1-3221a94c1e26",
+      "name": "List Files",
+      "webhookId": "719d71c4-f0e8-47bb-8d3d-e82d5a4c4b3c",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "BDKhLeCuiTCLgdPy",
+          "name": "GitHub OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9q6Xkn7IOnCQpuoi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9q6Xkn7IOnCQpuoi",
+          "cachedResultName": "File Q&A tool with OpenAI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "download_url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('download_url', ``, 'string') }}",
+            "question": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('question', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "download_url",
+              "displayName": "download_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        320
+      ],
+      "id": "e0a7a784-79ab-48db-8f93-c8707d297bc9",
+      "name": "File Q&A"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "List available internal files",
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "list",
+        "owner": {
+          "__rl": true,
+          "value": "tobiaszwingmann",
+          "mode": "list",
+          "cachedResultName": "tobiaszwingmann",
+          "cachedResultUrl": "https://github.com/tobiaszwingmann"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000",
+          "mode": "name"
+        },
+        "filePath": "documents/"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        112
+      ],
+      "id": "6c856031-37b9-455f-81c0-a6afaa92c141",
+      "name": "List Files1",
+      "webhookId": "75b116f5-9aa4-444f-8499-7e68dc892332",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "BDKhLeCuiTCLgdPy",
+          "name": "GitHub OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9q6Xkn7IOnCQpuoi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9q6Xkn7IOnCQpuoi",
+          "cachedResultName": "File Q&A tool with OpenAI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "download_url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('download_url', ``, 'string') }}",
+            "question": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('question', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "download_url",
+              "displayName": "download_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1536,
+        112
+      ],
+      "id": "cb7f29c5-bc82-418b-8c9b-91ee1900411a",
+      "name": "File Q&A1"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Search the web for real-time info",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        576,
+        112
+      ],
+      "id": "615672ef-694d-43d5-a4a6-feb0d65c5569",
+      "name": "Web Search Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "low"
+          }
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        288
+      ],
+      "id": "19bec3b0-eb8c-47da-a2cd-374f17e8be97",
+      "name": "Web search model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Find and get answers from available internal files",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "You are a file reader agent that can search download, and get answers from files from an internal repository. You have access to the following tools:\n- List files: see which files are available\n- File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        864,
+        112
+      ],
+      "id": "475864c8-4f15-40ab-beb9-67f9245dfb06",
+      "name": "File Q&A Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "low"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        320
+      ],
+      "id": "850beba2-eb2e-4ede-96ca-085d1c02343d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.5",
+          "mode": "list",
+          "cachedResultName": "gpt-5.5"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "high"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        112
+      ],
+      "id": "58501c10-066d-40be-8723-3482af85aba3",
+      "name": "Orchestrator Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=CONSOLIDATED FINDINGS:\n\n {{ $json.output }}",
+        "options": {
+          "systemMessage": "You are an expert research report writer. \n\nUse the given user import to generate a report in Markdown format: \n- Short title and a 3-4 sentence executive summary. \n- Name the original research question / hypothesis\n- Summarize key findings\n- Preserve and cite the source for each claim. \n- End with \"Sources\" sections. \n- Professional, neutral tone. \n\nDo not add any information beyond the given findings.\n\nSave the final report to Github as a markdown file using the provided tool and provide the link to the file."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2400,
+        -160
+      ],
+      "id": "c4f1acad-a3b0-4333-a09c-3f9a9154e4b3",
+      "name": "Report Writer"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2352,
+        64
+      ],
+      "id": "4eb190fc-8103-4bb5-a761-480ac4ed6539",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create a file on Github to save the report.",
+        "authentication": "oAuth2",
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "tobiaszwingmann",
+          "mode": "list",
+          "cachedResultName": "tobiaszwingmann",
+          "cachedResultUrl": "https://github.com/tobiaszwingmann"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000",
+          "mode": "name"
+        },
+        "filePath": "=reports/{{ $fromAI('File_Name', ``, 'string') }}",
+        "fileContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('File_Content', ``, 'string') }}",
+        "commitMessage": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Commit_Message', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [
+        2576,
+        48
+      ],
+      "id": "3b81406d-c9d2-46de-871b-2a0a3c6bf5dc",
+      "name": "Create a file in GitHub",
+      "webhookId": "3668ce6d-9140-4525-891d-df1fbe624028",
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "BDKhLeCuiTCLgdPy",
+          "name": "GitHub OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Deep Research",
+        "formDescription": "Perform a Deep Research query on our internal data and web search",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Research query"
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "You'll get an email once the research is done!"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -288,
+        160
+      ],
+      "id": "fab0d7d7-2b29-4ca8-b7bf-516e06ba7211",
+      "name": "On form submission",
+      "webhookId": "b08ff358-a8f6-42ae-800d-ad1791bb824f"
+    },
+    {
+      "parameters": {
+        "sendTo": "xxxxxxxxxxx@gmail.com",
+        "subject": "New report is ready",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2752,
+        -160
+      ],
+      "id": "1d3eb920-25c2-489d-ad04-395f76e42a82",
+      "name": "Send a message",
+      "webhookId": "41de833b-6e96-46d5-878d-bc788b77a0fe",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OKBz0mXZEMIzekkQ",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Output": [
+      {
+        "json": {
+          "output": "### Timeline: Internal assessment of Disney (DIS) through 2025\n\n| Date / note | Internal view | What changed in assessment | PT / valuation |\n|---|---|---|---|\n| **Post-Q2 FY25 note** | **Outperform**; constructive turnaround view | Disney was viewed as a recovery story: **DTC/streaming moving toward profitability** while **Experiences remained resilient**. Q2 beat/raise, improving ARPU, ESPN DTC initiatives, and FCF generation supported the thesis. Risks remained macro pressure, sports rights inflation, churn/ARPU uncertainty, and parks/capex execution. | **$120 PT**, ~19x FY26E EPS of ~$6.30; ~21% upside |\n| **Aug. 6, 2025 — Q3 FY25 note** | **Outperform**; confidence increased | Assessment became more confident after management raised FY25 adj. EPS guidance to **$5.85** and DTC profitability became more visible. Thesis shifted from “turnaround potential” to stronger conviction that **DTC profitability + durable Experiences** would drive multi-year EPS growth. Distribution deals, ESPN DTC launch plans, Star India JV benefits, and cruise/parks expansion were key catalysts. | **PT raised to $125**, ~19x FY26E EPS of ~$6.55 |\n| **Nov. 13, 2025 — Q4 FY25 note** | **Outperform**; conviction further increased | The thesis broadened from earnings recovery to **sustained EPS growth plus shareholder returns**. DTC margin expansion, record Experiences profit, stronger cash flow, ESPN DTC progress, and capital return were emphasized. The $7bn buyback authorization and $1.50 dividend were highlighted as valuation support. | **PT raised to $135**, ~19x FY27E EPS of ~$7.10 |\n\n### Net evolution in 2025\n\n- **Rating stayed Outperform throughout 2025.**\n- The internal view moved from **constructive turnaround** to **higher-conviction earnings recovery** to **multi-year EPS/FCF growth story with capital returns**.\n- The biggest drivers of increasing confidence were:\n  - Better-than-expected quarterly results and raised guidance.\n  - Clear progress in **DTC operating profitability**.\n  - Resilient **Experiences** performance.\n  - ESPN DTC and distribution catalysts.\n  - Star India deconsolidation/JV benefits.\n  - Buybacks and dividend announcement late in the year.\n- **Price target path:** **$120 → $125 → $135**.\n- Persistent risks across the year: macro/consumer weakness, parks cyclicality, sports rights inflation, streaming churn/ARPU risk, studio slate volatility, and capex/tax/timing risk.\n\nSources searched: internal Disney Q2 FY25, Q3 FY25, and Q4 FY25 research notes."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Parse Verdict": [
+      {
+        "json": {
+          "done": true,
+          "gaps": "",
+          "reasoning": "I verified the internal findings against the internal research notes and public filings/press releases. Using List_Files1 and File_Q_A1 I confirmed the internal notes (disney_q1_fy25_research_note.pdf, disney_q2_fy25_research_note.pdf, disney_q3_fy25_research_note.pdf, disney_q4_fy25_research_note.pdf) and the specific claims (ratings = Outperform in each note; 12‑mo PTs $115 → $120 → $125 → $135; Q2 DTC OI $336mm; Q3 management FY25 adj. EPS guide to $5.85; Q4 buyback authorization ~$7bn and dividend ~$1.50; DTC profitability statements and Experiences strength). I also cross‑checked public sources (Disney investor press releases and SEC filings) which corroborate DTC operating income, the Star India JV deconsolidation, the August 2025 ESPN DTC activity, and the November 2025 capital return announcements. All load‑bearing claims in the provided timeline were verified, so the findings do fully answer the research question."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Critique Agent": [
+      {
+        "json": {
+          "output": "{\"done\":true,\"gaps\":\"\",\"reasoning\":\"I verified the internal findings against the internal research notes and public filings/press releases. Using List_Files1 and File_Q_A1 I confirmed the internal notes (disney_q1_fy25_research_note.pdf, disney_q2_fy25_research_note.pdf, disney_q3_fy25_research_note.pdf, disney_q4_fy25_research_note.pdf) and the specific claims (ratings = Outperform in each note; 12‑mo PTs $115 → $120 → $125 → $135; Q2 DTC OI $336mm; Q3 management FY25 adj. EPS guide to $5.85; Q4 buyback authorization ~$7bn and dividend ~$1.50; DTC profitability statements and Experiences strength). I also cross‑checked public sources (Disney investor press releases and SEC filings) which corroborate DTC operating income, the Star India JV deconsolidation, the August 2025 ESPN DTC activity, and the November 2025 capital return announcements. All load‑bearing claims in the provided timeline were verified, so the findings do fully answer the research question.\"}"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Research": [
+      {
+        "json": {
+          "output": "### Timeline: Internal assessment of Disney (DIS) through 2025\n\n| Date / note | Internal view | What changed in assessment | PT / valuation |\n|---|---|---|---|\n| **Post-Q2 FY25 note** | **Outperform**; constructive turnaround view | Disney was viewed as a recovery story: **DTC/streaming moving toward profitability** while **Experiences remained resilient**. Q2 beat/raise, improving ARPU, ESPN DTC initiatives, and FCF generation supported the thesis. Risks remained macro pressure, sports rights inflation, churn/ARPU uncertainty, and parks/capex execution. | **$120 PT**, ~19x FY26E EPS of ~$6.30; ~21% upside |\n| **Aug. 6, 2025 — Q3 FY25 note** | **Outperform**; confidence increased | Assessment became more confident after management raised FY25 adj. EPS guidance to **$5.85** and DTC profitability became more visible. Thesis shifted from “turnaround potential” to stronger conviction that **DTC profitability + durable Experiences** would drive multi-year EPS growth. Distribution deals, ESPN DTC launch plans, Star India JV benefits, and cruise/parks expansion were key catalysts. | **PT raised to $125**, ~19x FY26E EPS of ~$6.55 |\n| **Nov. 13, 2025 — Q4 FY25 note** | **Outperform**; conviction further increased | The thesis broadened from earnings recovery to **sustained EPS growth plus shareholder returns**. DTC margin expansion, record Experiences profit, stronger cash flow, ESPN DTC progress, and capital return were emphasized. The $7bn buyback authorization and $1.50 dividend were highlighted as valuation support. | **PT raised to $135**, ~19x FY27E EPS of ~$7.10 |\n\n### Net evolution in 2025\n\n- **Rating stayed Outperform throughout 2025.**\n- The internal view moved from **constructive turnaround** to **higher-conviction earnings recovery** to **multi-year EPS/FCF growth story with capital returns**.\n- The biggest drivers of increasing confidence were:\n  - Better-than-expected quarterly results and raised guidance.\n  - Clear progress in **DTC operating profitability**.\n  - Resilient **Experiences** performance.\n  - ESPN DTC and distribution catalysts.\n  - Star India deconsolidation/JV benefits.\n  - Buybacks and dividend announcement late in the year.\n- **Price target path:** **$120 → $125 → $135**.\n- Persistent risks across the year: macro/consumer weakness, parks cyclicality, sports rights inflation, streaming churn/ARPU risk, studio slate volatility, and capex/tax/timing risk.\n\nSources searched: internal Disney Q2 FY25, Q3 FY25, and Q4 FY25 research notes."
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Report Writer": [
+      {
+        "json": {
+          "output": "Done — I saved the consolidated report to GitHub: https://github.com/tobiaszwingmann/build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000/blob/main/reports/Disney_Internal_Assessment_2025.md"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Define Research Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Define Research Query": {
+      "main": [
+        [
+          {
+            "node": "Round Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research": {
+      "main": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critique Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Verdict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Verdict": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Updated Research Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Round Start": {
+      "main": [
+        [
+          {
+            "node": "Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updated Research Query": {
+      "main": [
+        [
+          {
+            "node": "Round Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Files": {
+      "ai_tool": [
+        [
+          {
+            "node": "File Q&A Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Q&A": {
+      "ai_tool": [
+        [
+          {
+            "node": "File Q&A Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Files1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Q&A1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Search Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web search model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Web Search Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Q&A Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Research",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "File Q&A Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Orchestrator Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Research",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output": {
+      "main": [
+        [
+          {
+            "node": "Report Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Report Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a file in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "Report Writer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report Writer": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Define Research Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "74040ab3-6441-42ad-843b-55017bf314c6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d4a4b34dba3ee3b7962c8920f1d1ae2e83302284e2d9036f405c172286e6d2fe"
+  },
+  "nodeGroups": [],
+  "id": "96p2YxAgBxyyRv2i",
+  "tags": []
+}
