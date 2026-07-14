@@ -18,7 +18,7 @@ To perform the research, coordinate the following specialist sub-agents availabl
 Answer in a short, concise way.
 ```
 
-**Agent Tools**
+**First Sub-Agent Tool**
 - Name: `Web Search Agent`
 - Description:
 ```
@@ -26,6 +26,7 @@ Search the web for real-time info
 ```
 - Prompt: `AI defined`
 
+**Second Sub-Agent Tool**
 
 - Name: `File Q&A Agent`
 - Description:
