@@ -31,7 +31,7 @@ Search the web for real-time info
 - Name: `File Q&A Agent`
 - Description:
 ```
-Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.
+Find and get answers from available internal files
 ```
 - System Message:
 ```
