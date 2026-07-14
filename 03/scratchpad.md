@@ -44,11 +44,11 @@ You are a file reader agent that can search download, and get answers from files
 
 Research questions:
 ```
-"Did Disney release Q2 Earnings in 2026?"
+Did Disney release Q2 Earnings in 2026?
 ```
 
 ```
-"Do we have a research note on Netflix?"
+Do we have a research note on Netflix?
 ```
 
 
