@@ -152,7 +152,7 @@
         "promptType": "define",
         "text": "=Research question: {{ $json.query }}\n\nPrevious findings: \n{{ $json.findings}}\n\nPrevious gaps:\n{{ $json.gaps }}\n",
         "options": {
-          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, you have access to the following tools:\n- Web search: search the web for real-time answers\n- List files: see which internal files are available\n- File Q&A: Given a download URL (incl. token) you can ask a question against that file by making a call to an OpenAI API\n\nAnswer in a short, concise way."
+          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, you have access to the following tools:\n- Web search: search the web for real-time answers\n- List files: see which internal files are available\n- File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API\n\nAnswer in a short, concise way."
         }
       },
       "id": "ab294f13-3792-4a0b-b044-3ab4731f7ebf",
@@ -359,7 +359,7 @@
     },
     {
       "parameters": {
-        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link including token. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
         "workflowId": {
           "__rl": true,
           "value": "F8G715YMeX4SXbIL",
