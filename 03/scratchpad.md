@@ -42,7 +42,7 @@ You are a file reader agent that can search download, and get answers from files
 
 ## 3.2 Try the Orchestrator agent
 
-Research questions:
+**Research questions:**
 ```
 Did Disney release Q2 Earnings in 2026?
 ```
@@ -60,4 +60,9 @@ Compare our internal assessment of Disney in Q1/2025 with how the numbers turned
 **If-Node**
 ```
 {{ $('Round Start').item.json.round }}
+```
+
+**Try**
+```
+How did our internal assessment of Disney change during the course of 2025 and how does that compare to Q1/2026?
 ```
