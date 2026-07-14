@@ -14,7 +14,7 @@ Your job is to make concrete progress on the research question, prioritizing the
 To perform the research, you have access to the following tools:
 - Web search: search the web for real-time answers
 - List files: see which internal files are available
-- File Q&A: Given a download URL (incl. token) you can ask a question against that file by making a call to an OpenAI API
+- File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API
 
 Answer in a short, concise way.
 ```
@@ -40,7 +40,7 @@ build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000
 - Name: `File Q&A`
 - Description: 
 ```
-Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link including token. The response will be a short list with the required information from the source document as well as the source file for citation.
+Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.
 ```
 Inputs:
 - download_url: `Defined by model`
