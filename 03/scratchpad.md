@@ -55,3 +55,9 @@ Do we have a research note on Netflix?
 Compare our internal assessment of Disney in Q1/2025 with how the numbers turned out for Q1/2026.
 ```
 
+## 3.4 Implement an Autonomous Research Loop
+
+**If-Node**
+```
+{{ $('Round Start').item.json.round }}
+```
