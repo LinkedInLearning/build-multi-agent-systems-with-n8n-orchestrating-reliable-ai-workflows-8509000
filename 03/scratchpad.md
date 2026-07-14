@@ -40,7 +40,7 @@ You are a file reader agent that can search download, and get answers from files
 - File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API
 ```
 
-## 3.2 Try the Orchestrator agent
+## 3.3 Try the Orchestrator agent
 
 **Research questions:**
 ```
