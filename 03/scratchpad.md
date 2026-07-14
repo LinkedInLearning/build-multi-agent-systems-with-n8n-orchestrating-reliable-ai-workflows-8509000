@@ -52,7 +52,7 @@ Do we have a research note on Netflix?
 ```
 
 ```
-Compare our internal assessment of Disney in Q1/2025 with how the numbers turned out for Q1/2026.
+Give me a timeline of how our internal assessment of Disney changed throughout 2025.
 ```
 
 ## 3.4 Implement an Autonomous Research Loop
