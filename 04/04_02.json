@@ -3,13 +3,13 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "f442b44d-347f-46e0-8f17-f0548ae8086a",
+      "id": "144e0c9e-1cd2-463f-90d2-bf4c93bb16ea",
       "name": "Start Research",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        1536,
-        2352
+        -2416,
+        224
       ]
     },
     {
@@ -23,10 +23,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        3104,
-        2176
+        -848,
+        48
       ],
-      "id": "a7ec053d-9c2c-495f-9638-945ab6837482",
+      "id": "2fbbb30d-729b-4372-90d9-9286f1161d13",
       "name": "Critique Agent"
     },
     {
@@ -55,10 +55,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        3040,
-        2400
+        -912,
+        272
       ],
-      "id": "47d83176-8fff-4f2b-9b78-bb4bd6102da4",
+      "id": "b3373a41-9bbc-4da0-b43d-34f86ab2cacd",
       "name": "Critique Model",
       "credentials": {
         "openAiApi": {
@@ -85,10 +85,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2416,
-        2608
+        -1536,
+        480
       ],
-      "id": "ff9f6f58-c774-43da-a0d8-25b9aa997daa",
+      "id": "cb258061-cd6a-402a-8447-3809a9a1b16b",
       "name": "Web Search Model",
       "credentials": {
         "openAiApi": {
@@ -123,13 +123,13 @@
         },
         "options": {}
       },
-      "id": "f4f7fad3-f0a1-4516-bb87-51d4b56c2639",
+      "id": "bcda31f1-fe4b-422f-b85f-8eb28fa78ecd",
       "name": "Define Research Query",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1760,
-        2352
+        -2192,
+        224
       ]
     },
     {
@@ -141,10 +141,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3504,
-        2176
+        -448,
+        48
       ],
-      "id": "a94b8044-fb4b-48bd-8c1f-09606a88d427",
+      "id": "a7c35693-17b1-4edf-ad97-af30f10a2a23",
       "name": "Parse Verdict"
     },
     {
@@ -155,13 +155,13 @@
           "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, you have access to the following tools:\n- Web search: search the web for real-time answers\n- List files: see which internal files are available\n- File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API\n\nAnswer in a short, concise way."
         }
       },
-      "id": "38c8eee7-7d68-4dbc-8797-c09fc8cc9ecc",
+      "id": "f1c4854a-7f83-4451-9866-9215c351cd5c",
       "name": "Research",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        2352,
-        2176
+        -1600,
+        48
       ]
     },
     {
@@ -196,13 +196,13 @@
         },
         "options": {}
       },
-      "id": "4873c3db-91f4-4e93-acb8-18c3b383ab9d",
+      "id": "098a7152-6ceb-42b8-828b-22a7d60755f5",
       "name": "Updated Research Query",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3952,
-        2480
+        0,
+        352
       ]
     },
     {
@@ -210,10 +210,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1984,
-        2352
+        -1968,
+        224
       ],
-      "id": "e45df802-9d5f-476b-8058-871b51db0c71",
+      "id": "afe086df-fdd5-4683-b2dd-b31985e413e7",
       "name": "Round Start"
     },
     {
@@ -251,13 +251,13 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "db44da22-9a4d-4c06-82d1-c5af0469751f",
+      "id": "106bd982-ab9f-4c82-bae0-721d1608df3f",
       "name": "Done?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3728,
-        2176
+        -224,
+        48
       ]
     },
     {
@@ -277,10 +277,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3952,
-        2128
+        0,
+        0
       ],
-      "id": "76170db3-f9fa-409d-baaa-ec269932dc04",
+      "id": "f88184b1-bf12-4759-9d82-9294161d476c",
       "name": "Output"
     },
     {
@@ -307,10 +307,10 @@
       "type": "n8n-nodes-base.githubTool",
       "typeVersion": 1.1,
       "position": [
-        2704,
-        2608
+        -1248,
+        480
       ],
-      "id": "c60ceb0a-f16e-40d4-bf93-fd7c8b1fb151",
+      "id": "7df67f48-1a9e-411d-8df8-a7915299d5a6",
       "name": "List Files",
       "webhookId": "6fa13b80-4d22-40d3-9b3e-8760ea8bfcd5",
       "credentials": {
@@ -344,10 +344,10 @@
       "type": "n8n-nodes-base.githubTool",
       "typeVersion": 1.1,
       "position": [
-        3296,
-        2400
+        -656,
+        272
       ],
-      "id": "0a3f6a92-7286-4fe1-9073-6bcbea879529",
+      "id": "b59a5f40-427d-4237-b741-01ca16a4288a",
       "name": "List Files1",
       "webhookId": "f7be9ec9-e61a-4348-a492-e10a1219857a",
       "credentials": {
@@ -403,10 +403,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        3168,
-        2400
+        -784,
+        272
       ],
-      "id": "69840e00-faa7-4b76-af5a-5bff4f6e2a47",
+      "id": "6e7f964e-30c5-4a2d-9091-b1ba6d4f1ef3",
       "name": "File Q&A1"
     },
     {
@@ -455,10 +455,10 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        2832,
-        2608
+        -1120,
+        480
       ],
-      "id": "1bd19a6b-05f2-405a-86a1-540301dee316",
+      "id": "c4ff5dde-02e5-4fea-9898-04e25aaada51",
       "name": "File Q&A"
     },
     {
@@ -470,10 +470,10 @@
       "type": "@n8n/n8n-nodes-langchain.agentTool",
       "typeVersion": 3,
       "position": [
-        2336,
-        2400
+        -1616,
+        272
       ],
-      "id": "6f53914a-30b1-4704-9bea-3ee90bdeda8a",
+      "id": "6f4fc07f-03a3-4737-bb9a-26f34fca11a6",
       "name": "Web Search Agent"
     },
     {
@@ -487,10 +487,10 @@
       "type": "@n8n/n8n-nodes-langchain.agentTool",
       "typeVersion": 3,
       "position": [
-        2624,
-        2400
+        -1328,
+        272
       ],
-      "id": "76a5213f-2b7b-48b8-9bee-0510212a172f",
+      "id": "a4cf2479-e515-4ddf-a828-bc30757b1504",
       "name": "File Q&A Agent"
     },
     {
@@ -507,10 +507,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2208,
-        2400
+        -1744,
+        272
       ],
-      "id": "2598cc3a-483b-4d91-847e-bf819e78b31c",
+      "id": "be1bf68b-4463-477d-bddd-7c1e387c4a79",
       "name": "Orchestrator Model",
       "credentials": {
         "openAiApi": {
@@ -533,10 +533,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        2576,
-        2608
+        -1376,
+        480
       ],
-      "id": "7351cd7c-ca6c-452a-aa88-7f92bc22b44a",
+      "id": "bf730fb6-c0a3-4e5c-9429-b9e0bb0fd152",
       "name": "Q&A Model",
       "credentials": {
         "openAiApi": {
@@ -550,10 +550,7 @@
     "Output": [
       {
         "json": {
-          "output": "Short answer\n- Through 2025 our internal assessment stayed constructive (Outperform) with steadily higher price targets and EPS as streaming margins and Parks cashflow improved.  \n- For Q1/2026 we have no contemporaneous internal document in the reviewed repo (Feb–Mar 2026) to show a formal re‑rating; public events in Feb–Mar 2026 increased uncertainty, and the first internal follow‑up we can document is June 26, 2026 — which kept an Outperform stance but tightened valuation.\n\nKey facts (concise)\n- End‑2025 (Nov 13, 2025 internal note)\n  - Rating: Outperform\n  - 12‑mo target: ≈ $135\n  - FY25 adj. EPS: $5.93\n  - FY27E adj. EPS used in valuation: ≈ $7.10\n  - Implied target multiple: ≈ 19x\n  - Drivers: streaming margin inflection, studio rebound, strong Parks cash flow\n\n- Q1/early‑2026 (Feb–Mar 2026)\n  - Repo: no internal Q1/2026‑dated investment note, desk alert, or trading memo located → cannot confirm a formal internal stance authored in that window.\n  - Public developments that changed the input set: company stopped quarterly paid‑subscriber disclosures, Parks visitation headwinds, and CEO succession (Feb 2–3, 2026) — these raised model uncertainty and execution risk.\n\n- First documented follow‑up after those events (June 26, 2026)\n  - Rating: Outperform (unchanged)\n  - 12‑mo target: $125 (down from ~$135)\n  - FY26E / FY27E adj. EPS: FY26E ≈ $6.64–6.88 (53rd week note); FY27E ≈ $7.35\n  - Target multiple applied: ~17x to FY27E (lower than ~19x prior)\n  - Notes: flags H1 FCF decline (~53% Y/Y due to tax timing and higher Parks/cruise capex); higher Experiences capex called out as a watch item\n\nInterpretation\n- Fundamental thesis (streaming profitability + Parks cash) that underpinned the constructive 2025 stance largely remained intact.  \n- Observable change by mid‑2026 was primarily valuation discipline and risk emphasis: lower price target and lower multiple despite modestly higher forward EPS, with greater focus on capex/FCF timing and Parks execution.  \n- Because there is no internal Feb–Mar 2026 document in the reviewed repo, we cannot assert an explicit contemporaneous internal downgrade or shift in Q1/2026 — only that public events likely prompted heightened caveats which are first reflected formally in the June 26, 2026 note.\n\nRecommended next step\n- If you want a crisp documented comparison now, I can produce a one‑page side‑by‑side numeric table (Nov 13, 2025 vs June 26, 2026) with rating, price target, FY25/26/27 EPS and implied multiples — immediate.  \n- If you need a definitive contemporaneous Q1/2026 internal view, I can search additional internal systems (trading desk alerts, emails, short desk logs) for Feb–Mar 2026 communications to try to locate any informal Q1/2026 assessments — slower and may still return nothing.\n\nWhich would you like me to do?"
-        },
-        "pairedItem": {
-          "item": 0
+          "output": "Executive summary\n- During 2025 our internal view of Disney stayed consistently constructive: Outperform rating every quarter, rising price targets (≈$115 → $135) and progressive EPS upgrades driven by streaming margin inflection, studio recovery and strong Parks cash flow. \n- As of Q1 FY2026 (quarter ended Dec. 27, 2025) we have no internally‑dated “Q1/2026” investment note in the repo; the most recent internal view in the window is the Q4 FY25 note (Nov 13, 2025). Public events around Q1 FY26 (Feb 2–3, 2026) — notably Disney stopping quarterly paid‑subscriber disclosures, parks/international visitation headwinds, and CEO succession — introduced new uncertainty and shifted the evidence base from subscriber volumes to profitability and leadership execution.\n\nWhat our internal notes show (Jan–Nov 2025)\n- Q1 FY25 note (covers results Feb 5, 2025)\n  - Tone: constructive; rating Outperform.\n  - 12‑month target: ≈ $115.\n  - Modeling: FY25 adj. EPS ≈ $5.39 → FY26E adj. EPS ≈ $5.99.\n  - Drivers called out: early streaming stabilization; parks recovery.\n  - Action: maintain constructive stance. (documents/disney_q1_fy25_research_note.pdf)\n- Q2 FY25 note (mid‑2025 earnings review)\n  - Tone: constructive; modest target lift to ≈ $120.\n  - Management raised FY25 adj. EPS guidance; FY26E EPS ≈ $6.30 used in modeling.\n  - Drivers: improving DTC economics and parks momentum. (documents/disney_q2_fy25_research_note.pdf)\n- Q3 FY25 note (Aug 6, 2025)\n  - Tone: constructive; target ≈ $125.\n  - FY26E adj. EPS ≈ $6.55; highlights streaming margin inflection and Experiences strength. (documents/disney_q3_fy25_research_note.pdf)\n- Q4 FY25 note (Nov 13, 2025) — latest internal note in repo before Mar 31, 2026\n  - Tone: constructive/positive; rating Outperform.\n  - 12‑month target: ≈ $135.\n  - FY25 adj. EPS reported ≈ $5.93; FY27E adj. EPS used in valuation (~$7.10) with implied multiples ≈ ~19x.\n  - Drivers: DTC profitability inflection, record Parks cash generation, studio tailwinds, improving FCF enabling capital returns.\n  - Action: continue Outperform, monitor ESPN rights timing, capex/cruise spend, and DTC margin progress. (documents/disney_q4_fy25_research_note.pdf)\n\nNet change through 2025\n- Upgrades in near‑term EPS and higher price targets each quarter as results / guidance and streaming margin progress outperformed prior internal assumptions.\n- Consistent buy case: streaming margin inflection + durable Parks cash flow = higher confidence in FCF-driven returns.\n- Persistent monitoring items: carriage/distribution risk, ESPN rights/costs, India/JioStar/impairment comparability, and capex timing for parks/cruise.\n\nHow Q1 FY2026 (public events) affected the picture vs end‑of‑2025\n- Repo status: no internal Q1 FY26 “investment note” or “Q1/2026” file was found for Jan 1–Mar 31, 2026. The Q4 FY25 note (Nov 13) is the last internal position in the requested window. (file list from repo)\n- Public events that materially change inputs after Q4 FY25:\n  - June 28, 2025 (filed earlier, but implemented for Q1 FY26 reporting): Disney stopped reporting quarterly paid‑subscriber counts/ARPU publicly → reduces visibility into growth/churn; forces internal forecasts to rely more on company‑reported OI/margins than subs. (SEC filing)\n  - Oct–Nov 2025: YouTube TV carriage dispute (temporary blackout) and Oct. 29 closing of Hulu+LiveTV/Fubo deal → near‑term distribution/affiliate revenue noise referenced in Q4/Q1 commentary.\n  - Feb 2, 2026 (Q1 FY26 release): Company highlighted SVOD operating income improvement but flagged international visitation headwinds in Parks; last public subscriber totals remained those reported as of Sept. 27, 2025. (press release)\n  - Feb 3, 2026: CEO succession announced (Josh D’Amaro named CEO; Dana Walden President & CCO) → prompts reassessment of strategic priorities and execution risk.\n- Practical impacts on internal assessment vs end‑2025:\n  - Visibility/metrics: shift from subscriber counts to profitability metrics as primary streaming inputs — this increases model uncertainty for growth assumptions but reduces reliance on a single public KPI.\n  - Risk profile: parks international visitation weakness and carriage noise introduced downside near‑term revenue risk, even as streaming OI improvements validated parts of the buy case.\n  - Governance/strategy: CEO succession likely shifted emphasis toward Parks/experiences (D’Amaro background) and invites re‑forecasting of content/streaming strategy and capital allocation.\n  - Overall stance: based on available internal notes + public developments, the constructive thesis (Outperform) likely remained intact near Q1 FY26 but with more caveats and closer monitoring of parks visitation trends, carriage outcomes, and execution under new leadership. Market priced some of these concerns (notable share drops on Nov 13, 2025 and Feb 2–3, 2026).\n\nGaps & recommended next steps (to close the comparison definitively)\n1. Retrieve any internal Q1 FY26 (Jan–Mar 2026) memos, desk updates, or trading/strategy notes — none were located in the repo; fetch and summarize if they exist.\n2. If you want a direct “end‑of‑2025 vs Q1/2026” internal comparison: allow me to (a) pull any internal notes dated Feb–Mar 2026 or labeled “Q1/2026”, and (b) extract the precise changes in price target, EPS models, multiples, and explicit recommended actions.\n3. Optionally include the repo’s Q2 FY26 note (dated June 26, 2026) to show the first explicit internal follow‑up after the Q1 FY26 public events (it shows a lower target ~$125 and lower multiple — useful context if you want how the firm’s view evolved beyond Mar 31, 2026).\n\nIf you want, I can now:\n- Fetch any internal documents for Feb–Mar 2026 and produce a side‑by‑side table (Q4 FY25 vs internal Q1 FY26) with exact model changes; or\n- Pull the June 26, 2026 note and do a rapid comparison (Nov 13, 2025 → June 26, 2026) to show how the view evolved post‑Q1 FY26 public events. Which do you prefer?"
         }
       }
     ],
@@ -733,11 +730,6 @@
         ]
       ]
     },
-    "Output": {
-      "main": [
-        []
-      ]
-    },
     "List Files": {
       "ai_tool": [
         [
@@ -833,12 +825,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "12a415b7-495f-4580-ac34-17160fbe65da",
+  "versionId": "cf0201a3-3820-48ee-a042-5ad88cbc21bb",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "94e1edcc34a91a151fc2ec1b99597068a304e37fdb946fc806f00f97776fce3a"
   },
   "nodeGroups": [],
-  "id": "jv8AVkVUNGxcBE3w",
+  "id": "NbVN8Q29reDE7g8L",
   "tags": []
 }
