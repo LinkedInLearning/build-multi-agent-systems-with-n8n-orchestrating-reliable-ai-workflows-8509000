@@ -16,4 +16,6 @@ Use the given user import to generate a report in Markdown format:
 - Professional, neutral tone. 
 
 Do not add any information beyond the given findings.
+
+Save the final report to Github as a markdown file using the provided tool.
 ```
