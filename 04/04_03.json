@@ -1,21 +1,74 @@
 {
-  "name": "04_03 Report",
+  "name": "04_03 Report Writer",
   "nodes": [
     {
       "parameters": {},
-      "id": "0be4709b-844e-4acc-a2f8-575d0dee5d4a",
-      "name": "Start Research",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -2416,
-        224
-      ]
+        -224,
+        64
+      ],
+      "id": "e7ada787-bfd5-4bba-becd-d1738fdd5129",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39de528b-0b4b-4247-985a-078e3062f1ad",
+              "name": "query",
+              "value": "Give me a timeline of how our internal assessment of Disney changed throughout 2025.",
+              "type": "string"
+            },
+            {
+              "id": "0662139b-b10b-4991-b1de-8fd4c1f1697c",
+              "name": "round",
+              "value": 0,
+              "type": "number"
+            },
+            {
+              "id": "08f699d5-7f5b-4a58-bfb7-f58772e11b9e",
+              "name": "findings",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        64
+      ],
+      "id": "453435c2-f1b7-4dc5-bd02-5746ac7dd8ca",
+      "name": "Define Research Query"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Research question:\n```\n{{ $('Define Research Query').item.json.query }}\n```\n\nFindings gathered so far\n```\n{{ $json.output }}\n{{ $('Define Research Query').item.json.findings }}\n```",
+        "text": "=Research question: {{ $json.query }}\n\nPrevious findings: \n{{ $json.findings}}\n\nPrevious gaps:\n{{ $json.gaps }}",
+        "options": {
+          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, coordinate the following specialist sub-agents available to you as tools:\n- Web Search Agent – open web (LLM-based). Use for real-time, external information search.\n- File Research Agent – Access to internal documents (e.g., analyst notes). Use for internal information requests.\n\nAnswer in a short, concise way."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        592,
+        -112
+      ],
+      "id": "f62eb282-894b-455c-a9da-97e4729d4a37",
+      "name": "Research",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Research question:\n\"\"\"\n{{ $('Define Research Query').item.json.query }}\n\"\"\"\n\nFindings gathered so far\n\"\"\"\n{{ $json.output }}\n{{ $('Define Research Query').item.json.findings }}\n\"\"\"",
         "options": {
           "systemMessage": "You are a critique agent.\n\nYour job is to determine whether the research question has been fully answered by the findings gathered so far.\n\nYou must perform tool-based verification before returning your verdict.\n\nInputs:\n- Research question: {{research_question}}\n- Findings gathered so far: {{findings}}\n\nRequired process:\n1. Use web search to fact-check all factual claims in the findings that are relevant to the research question.\n2. Use List files to check whether relevant internal files are available.\n3. If relevant internal files are available, use File Q&A on the relevant file(s) before deciding.\n4. Compare the verified evidence against the research question.\n5. Decide whether the findings fully answer the research question.\n\nRules:\n- Set \"done\" to true only if the findings completely answer the research question and the key factual claims are verified.\n- Set \"done\" to false if the answer is incomplete, unclear, unsupported, contradicted by sources, or missing important information.\n- If you cannot verify an important claim, set \"done\" to false.\n- Use \"gaps\" to briefly describe what is missing or still needs research.\n- Use \"reasoning\" to briefly explain your verdict.\n- Do not rely only on the provided findings unless tool use is impossible.\n\nReturn only valid JSON in this exact format:\n\n{\n  \"done\": false,\n  \"gaps\": \"\",\n  \"reasoning\": \"\"\n}"
         }
@@ -23,10 +76,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -848,
-        48
+        1344,
+        -112
       ],
-      "id": "7628198c-f2c0-4580-a8af-fdba3b70f7a8",
+      "id": "3a9bc294-fb2f-4a7d-a539-43ba69788b09",
       "name": "Critique Agent",
       "disabled": true
     },
@@ -34,9 +87,8 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5-mini",
           "mode": "list",
-          "cachedResultName": "gpt-5-mini"
+          "value": "gpt-5-mini"
         },
         "builtInTools": {
           "webSearch": {
@@ -56,82 +108,17 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -912,
-        272
+        1280,
+        112
       ],
-      "id": "98fc1372-2ccb-49f8-8dc0-c182a2bb18bb",
-      "name": "Critique Model",
+      "id": "93acf2cf-0c99-4504-a5ca-b26fd27afd5a",
+      "name": "OpenAI Chat Model1",
       "credentials": {
         "openAiApi": {
-          "id": "vIt4XIujtaBmV5aq",
-          "name": "OpenAi account"
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
         }
       }
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "value": "gpt-5-mini",
-          "mode": "list",
-          "cachedResultName": "gpt-5-mini"
-        },
-        "builtInTools": {
-          "webSearch": {
-            "searchContextSize": "low"
-          }
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.3,
-      "position": [
-        -1536,
-        480
-      ],
-      "id": "c4f998f0-766b-421f-9f6f-97aaaa1389ed",
-      "name": "Web Search Model",
-      "credentials": {
-        "openAiApi": {
-          "id": "vIt4XIujtaBmV5aq",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "q-0001",
-              "name": "query",
-              "value": "How did our internal assessment of Disney change during the course of 2025 and how does that compare to Q1/2026?",
-              "type": "string"
-            },
-            {
-              "id": "cb1a3c46-eeef-4f28-bbc9-627ea86a1baf",
-              "name": "findings",
-              "value": "",
-              "type": "string"
-            },
-            {
-              "id": "f3f705f5-c8be-40de-87f0-dd747b523287",
-              "name": "round",
-              "value": 0,
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "981afe53-8dca-40b2-b640-c53e65654cbe",
-      "name": "Define Research Query",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -2192,
-        224
-      ]
     },
     {
       "parameters": {
@@ -142,82 +129,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        48
+        1744,
+        -112
       ],
-      "id": "9c11822e-a628-42a3-b7d9-ca704a088007",
-      "name": "Parse Verdict",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=Research question: {{ $json.query }}\n\nPrevious findings: \n{{ $json.findings}}\n\nPrevious gaps:\n{{ $json.gaps }}\n",
-        "options": {
-          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, you have access to the following tools:\n- Web search: search the web for real-time answers\n- List files: see which internal files are available\n- File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API\n\nAnswer in a short, concise way."
-        }
-      },
-      "id": "fd2e8ccb-9f9f-4e92-be0b-a1df143546e8",
-      "name": "Research",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        -1600,
-        48
-      ],
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "q-0001",
-              "name": "query",
-              "value": "={{ $('Round Start').item.json.query }}",
-              "type": "string"
-            },
-            {
-              "id": "q-0002",
-              "name": "round",
-              "value": "={{ $('Round Start').item.json.round + 1 }}",
-              "type": "number"
-            },
-            {
-              "id": "q-0003",
-              "name": "findings",
-              "value": "=Round {{ $('Round Start').item.json.round }} Findings:\n==================\n{{ $('Research').item.json.output }}\n\n{{ $('Round Start').item.json.findings }}",
-              "type": "string"
-            },
-            {
-              "id": "q-0004",
-              "name": "gaps",
-              "value": "={{ $('Parse Verdict').item.json.gaps }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "d81d970f-8354-4fae-88d6-66f77131f45a",
-      "name": "Updated Research Query",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        0,
-        352
-      ]
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [
-        -1968,
-        224
-      ],
-      "id": "d7d94c64-6b76-4fcb-8b86-545155776bb0",
-      "name": "Round Start"
+      "id": "14694a80-6fc1-462c-9e89-11be5a93130c",
+      "name": "Parse Verdict"
     },
     {
       "parameters": {
@@ -226,13 +142,13 @@
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "loose",
-            "version": 2
+            "version": 3
           },
           "conditions": [
             {
-              "id": "if-done",
+              "id": "9171a0b6-cdc9-434a-b65b-d81aa7315e63",
               "leftValue": "={{ $json.done }}",
-              "rightValue": "",
+              "rightValue": false,
               "operator": {
                 "type": "boolean",
                 "operation": "true",
@@ -240,7 +156,7 @@
               }
             },
             {
-              "id": "e2052133-62d8-42a4-9611-3c329ce3e133",
+              "id": "3407ae77-8245-4211-a01f-baf0205190c7",
               "leftValue": "={{ $('Round Start').item.json.round }}",
               "rightValue": 3,
               "operator": {
@@ -254,24 +170,34 @@
         "looseTypeValidation": true,
         "options": {}
       },
-      "id": "d8361164-7c05-480e-b1ce-e01f1e5d4502",
-      "name": "Done?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
+      "typeVersion": 2.3,
       "position": [
-        -224,
-        48
+        1968,
+        -112
       ],
-      "disabled": true
+      "id": "ed02fa1b-26e5-4422-838c-f4b59ab0da87",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        224,
+        64
+      ],
+      "id": "45a36e91-29b7-4df5-a179-db793a987961",
+      "name": "Round Start"
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
-              "id": "13bda4ef-4a25-4cb9-8cd4-cf8024f4a475",
+              "id": "ca6f87ab-30ca-47ae-b674-656c12bd8ddf",
               "name": "output",
-              "value": "={{ $('Research').item.json.output\n}}",
+              "value": "={{ $('Research').item.json.output }}",
               "type": "string"
             }
           ]
@@ -281,14 +207,55 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        0
+        2192,
+        -160
       ],
-      "id": "113ec731-7510-46a4-bdc5-3bf9aa53345d",
+      "id": "9bb94d18-584e-48b8-8389-552813bc39f2",
       "name": "Output"
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2f86da81-4ff6-4a01-904d-31d2b71571e1",
+              "name": "query",
+              "value": "={{ $('Round Start').item.json.query }}",
+              "type": "string"
+            },
+            {
+              "id": "7819c156-f6d7-4b9c-973e-a3879712f171",
+              "name": "round",
+              "value": "={{ $('Round Start').item.json.round + 1 }}",
+              "type": "string"
+            },
+            {
+              "id": "f7f97006-748c-4b6b-94bc-09633127a330",
+              "name": "findings",
+              "value": "=Round {{ $('Round Start').item.json.round }} Findings:\n==================\n{{ $('Research').item.json.output }}\n\n{{ $('Round Start').item.json.findings }}",
+              "type": "string"
+            },
+            {
+              "id": "d0535676-5fed-427c-961d-c473d7c57b97",
+              "name": "gaps",
+              "value": "={{ $('Parse Verdict').item.json.gaps }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2192,
+        192
+      ],
+      "id": "dd3a21d5-1101-45d9-b4d0-a586552ac199",
+      "name": "Updated Research Query"
+    },
+    {
+      "parameters": {
         "descriptionType": "manual",
         "toolDescription": "List available internal files",
         "authentication": "oAuth2",
@@ -311,18 +278,68 @@
       "type": "n8n-nodes-base.githubTool",
       "typeVersion": 1.1,
       "position": [
-        -1248,
-        480
+        944,
+        320
       ],
-      "id": "e6748161-d0de-4e5a-b188-9081340c3e75",
+      "id": "f4525658-41c9-4161-beb1-3221a94c1e26",
       "name": "List Files",
-      "webhookId": "b63962c9-273f-4020-b746-daa1a84d452e",
+      "webhookId": "719d71c4-f0e8-47bb-8d3d-e82d5a4c4b3c",
       "credentials": {
         "githubOAuth2Api": {
-          "id": "uj6ICrWupTmCdWut",
-          "name": "GitHub account 3"
+          "id": "BDKhLeCuiTCLgdPy",
+          "name": "GitHub OAuth2 API"
         }
       }
+    },
+    {
+      "parameters": {
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9q6Xkn7IOnCQpuoi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9q6Xkn7IOnCQpuoi",
+          "cachedResultName": "File Q&A tool with OpenAI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "download_url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('download_url', ``, 'string') }}",
+            "question": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('question', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "download_url",
+              "displayName": "download_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        320
+      ],
+      "id": "e0a7a784-79ab-48db-8f93-c8707d297bc9",
+      "name": "File Q&A"
     },
     {
       "parameters": {
@@ -348,16 +365,16 @@
       "type": "n8n-nodes-base.githubTool",
       "typeVersion": 1.1,
       "position": [
-        -656,
-        272
+        1408,
+        112
       ],
-      "id": "27130c86-7842-44a4-a46a-848e3e73b0a2",
+      "id": "6c856031-37b9-455f-81c0-a6afaa92c141",
       "name": "List Files1",
-      "webhookId": "4d731bfe-653c-495b-8db3-507c77404aff",
+      "webhookId": "75b116f5-9aa4-444f-8499-7e68dc892332",
       "credentials": {
         "githubOAuth2Api": {
-          "id": "uj6ICrWupTmCdWut",
-          "name": "GitHub account 3"
+          "id": "BDKhLeCuiTCLgdPy",
+          "name": "GitHub OAuth2 API"
         }
       }
     },
@@ -366,10 +383,10 @@
         "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
         "workflowId": {
           "__rl": true,
-          "value": "F8G715YMeX4SXbIL",
+          "value": "9q6Xkn7IOnCQpuoi",
           "mode": "list",
-          "cachedResultUrl": "/workflow/F8G715YMeX4SXbIL",
-          "cachedResultName": "02_02 File Q&A Tool"
+          "cachedResultUrl": "/workflow/9q6Xkn7IOnCQpuoi",
+          "cachedResultName": "File Q&A tool with OpenAI"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -386,8 +403,7 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
             },
             {
               "id": "question",
@@ -396,8 +412,7 @@
               "defaultMatch": false,
               "display": true,
               "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
+              "type": "string"
             }
           ],
           "attemptToConvertTypes": false,
@@ -407,63 +422,11 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        -784,
-        272
+        1536,
+        112
       ],
-      "id": "cd763c4a-7542-4c1c-bdd3-ce65ecf77653",
+      "id": "cb7f29c5-bc82-418b-8c9b-91ee1900411a",
       "name": "File Q&A1"
-    },
-    {
-      "parameters": {
-        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
-        "workflowId": {
-          "__rl": true,
-          "value": "F8G715YMeX4SXbIL",
-          "mode": "list",
-          "cachedResultUrl": "/workflow/F8G715YMeX4SXbIL",
-          "cachedResultName": "02_02 File Q&A Tool"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "download_url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('download_url', ``, 'string') }}",
-            "question": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('question', ``, 'string') }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "download_url",
-              "displayName": "download_url",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
-            },
-            {
-              "id": "question",
-              "displayName": "question",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "canBeUsedToMatch": true,
-              "type": "string",
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-      "typeVersion": 2.2,
-      "position": [
-        -1120,
-        480
-      ],
-      "id": "77d34076-ea2c-409e-bc91-39d04e3da358",
-      "name": "File Q&A"
     },
     {
       "parameters": {
@@ -474,11 +437,40 @@
       "type": "@n8n/n8n-nodes-langchain.agentTool",
       "typeVersion": 3,
       "position": [
-        -1616,
-        272
+        576,
+        112
       ],
-      "id": "461b57e8-ee2e-43c2-8957-473d8cd94398",
+      "id": "615672ef-694d-43d5-a4a6-feb0d65c5569",
       "name": "Web Search Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {
+          "webSearch": {
+            "searchContextSize": "low"
+          }
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        496,
+        288
+      ],
+      "id": "19bec3b0-eb8c-47da-a2cd-374f17e8be97",
+      "name": "Web search model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
+        }
+      }
     },
     {
       "parameters": {
@@ -491,35 +483,36 @@
       "type": "@n8n/n8n-nodes-langchain.agentTool",
       "typeVersion": 3,
       "position": [
-        -1328,
-        272
+        864,
+        112
       ],
-      "id": "a773e26f-42d7-4f38-a6bb-ec82e5f9a6a2",
+      "id": "475864c8-4f15-40ab-beb9-67f9245dfb06",
       "name": "File Q&A Agent"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5-mini",
           "mode": "list",
-          "cachedResultName": "gpt-5-mini"
+          "value": "gpt-5-mini"
         },
         "builtInTools": {},
-        "options": {}
+        "options": {
+          "reasoningEffort": "low"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -1744,
-        272
+        816,
+        320
       ],
-      "id": "edfea121-9989-47f3-8f6c-e74f17b19c88",
-      "name": "Orchestrator Model",
+      "id": "850beba2-eb2e-4ede-96ca-085d1c02343d",
+      "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "vIt4XIujtaBmV5aq",
-          "name": "OpenAi account"
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
         }
       }
     },
@@ -527,25 +520,27 @@
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5-mini",
+          "value": "gpt-5.5",
           "mode": "list",
-          "cachedResultName": "gpt-5-mini"
+          "cachedResultName": "gpt-5.5"
         },
         "builtInTools": {},
-        "options": {}
+        "options": {
+          "reasoningEffort": "high"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -1376,
-        480
+        448,
+        112
       ],
-      "id": "80a89e3c-a8e2-4e1f-9171-33d342cab1ac",
-      "name": "Q&A Model",
+      "id": "58501c10-066d-40be-8723-3482af85aba3",
+      "name": "Orchestrator Model",
       "credentials": {
         "openAiApi": {
-          "id": "vIt4XIujtaBmV5aq",
-          "name": "OpenAi account"
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
         }
       }
     },
@@ -560,19 +555,18 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        272,
-        0
+        2400,
+        -160
       ],
-      "id": "35d8f2e5-7451-4a5a-be60-34c764d90351",
-      "name": "AI Agent"
+      "id": "c4f1acad-a3b0-4333-a09c-3f9a9154e4b3",
+      "name": "Report Writer"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "gpt-5-mini",
           "mode": "list",
-          "cachedResultName": "gpt-5-mini"
+          "value": "gpt-5-mini"
         },
         "builtInTools": {},
         "options": {}
@@ -580,15 +574,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        240,
-        208
+        2352,
+        48
       ],
-      "id": "679dfcd8-60cc-4cc1-9a46-ef9074829803",
-      "name": "OpenAI Chat Model",
+      "id": "4eb190fc-8103-4bb5-a761-480ac4ed6539",
+      "name": "OpenAI Chat Model2",
       "credentials": {
         "openAiApi": {
-          "id": "vIt4XIujtaBmV5aq",
-          "name": "OpenAi account"
+          "id": "Qisx2uzl8QHJIcCg",
+          "name": "OpenAI account"
         }
       }
     },
@@ -607,8 +601,8 @@
         },
         "repository": {
           "__rl": true,
-          "mode": "name",
-          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000"
+          "value": "build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000",
+          "mode": "name"
         },
         "filePath": "=reports/{{ $fromAI('File_Name', ``, 'string') }}",
         "fileContent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('File_Content', ``, 'string') }}",
@@ -617,16 +611,16 @@
       "type": "n8n-nodes-base.githubTool",
       "typeVersion": 1.1,
       "position": [
-        432,
-        208
+        2560,
+        48
       ],
-      "id": "08921cc0-0b4c-4e91-be13-174b6fdef9a7",
-      "name": "Save report to Github",
-      "webhookId": "37449986-9099-4759-b4b8-ad48b4e4fb03",
+      "id": "3b81406d-c9d2-46de-871b-2a0a3c6bf5dc",
+      "name": "Create a file in GitHub",
+      "webhookId": "3668ce6d-9140-4525-891d-df1fbe624028",
       "credentials": {
         "githubOAuth2Api": {
-          "id": "uj6ICrWupTmCdWut",
-          "name": "GitHub account 3"
+          "id": "BDKhLeCuiTCLgdPy",
+          "name": "GitHub OAuth2 API"
         }
       }
     }
@@ -635,17 +629,19 @@
     "Output": [
       {
         "json": {
-          "output": "Executive summary\n- During 2025 our internal view of Disney stayed consistently constructive: Outperform rating every quarter, rising price targets (≈$115 → $135) and progressive EPS upgrades driven by streaming margin inflection, studio recovery and strong Parks cash flow. \n- As of Q1 FY2026 (quarter ended Dec. 27, 2025) we have no internally‑dated “Q1/2026” investment note in the repo; the most recent internal view in the window is the Q4 FY25 note (Nov 13, 2025). Public events around Q1 FY26 (Feb 2–3, 2026) — notably Disney stopping quarterly paid‑subscriber disclosures, parks/international visitation headwinds, and CEO succession — introduced new uncertainty and shifted the evidence base from subscriber volumes to profitability and leadership execution.\n\nWhat our internal notes show (Jan–Nov 2025)\n- Q1 FY25 note (covers results Feb 5, 2025)\n  - Tone: constructive; rating Outperform.\n  - 12‑month target: ≈ $115.\n  - Modeling: FY25 adj. EPS ≈ $5.39 → FY26E adj. EPS ≈ $5.99.\n  - Drivers called out: early streaming stabilization; parks recovery.\n  - Action: maintain constructive stance. (documents/disney_q1_fy25_research_note.pdf)\n- Q2 FY25 note (mid‑2025 earnings review)\n  - Tone: constructive; modest target lift to ≈ $120.\n  - Management raised FY25 adj. EPS guidance; FY26E EPS ≈ $6.30 used in modeling.\n  - Drivers: improving DTC economics and parks momentum. (documents/disney_q2_fy25_research_note.pdf)\n- Q3 FY25 note (Aug 6, 2025)\n  - Tone: constructive; target ≈ $125.\n  - FY26E adj. EPS ≈ $6.55; highlights streaming margin inflection and Experiences strength. (documents/disney_q3_fy25_research_note.pdf)\n- Q4 FY25 note (Nov 13, 2025) — latest internal note in repo before Mar 31, 2026\n  - Tone: constructive/positive; rating Outperform.\n  - 12‑month target: ≈ $135.\n  - FY25 adj. EPS reported ≈ $5.93; FY27E adj. EPS used in valuation (~$7.10) with implied multiples ≈ ~19x.\n  - Drivers: DTC profitability inflection, record Parks cash generation, studio tailwinds, improving FCF enabling capital returns.\n  - Action: continue Outperform, monitor ESPN rights timing, capex/cruise spend, and DTC margin progress. (documents/disney_q4_fy25_research_note.pdf)\n\nNet change through 2025\n- Upgrades in near‑term EPS and higher price targets each quarter as results / guidance and streaming margin progress outperformed prior internal assumptions.\n- Consistent buy case: streaming margin inflection + durable Parks cash flow = higher confidence in FCF-driven returns.\n- Persistent monitoring items: carriage/distribution risk, ESPN rights/costs, India/JioStar/impairment comparability, and capex timing for parks/cruise.\n\nHow Q1 FY2026 (public events) affected the picture vs end‑of‑2025\n- Repo status: no internal Q1 FY26 “investment note” or “Q1/2026” file was found for Jan 1–Mar 31, 2026. The Q4 FY25 note (Nov 13) is the last internal position in the requested window. (file list from repo)\n- Public events that materially change inputs after Q4 FY25:\n  - June 28, 2025 (filed earlier, but implemented for Q1 FY26 reporting): Disney stopped reporting quarterly paid‑subscriber counts/ARPU publicly → reduces visibility into growth/churn; forces internal forecasts to rely more on company‑reported OI/margins than subs. (SEC filing)\n  - Oct–Nov 2025: YouTube TV carriage dispute (temporary blackout) and Oct. 29 closing of Hulu+LiveTV/Fubo deal → near‑term distribution/affiliate revenue noise referenced in Q4/Q1 commentary.\n  - Feb 2, 2026 (Q1 FY26 release): Company highlighted SVOD operating income improvement but flagged international visitation headwinds in Parks; last public subscriber totals remained those reported as of Sept. 27, 2025. (press release)\n  - Feb 3, 2026: CEO succession announced (Josh D’Amaro named CEO; Dana Walden President & CCO) → prompts reassessment of strategic priorities and execution risk.\n- Practical impacts on internal assessment vs end‑2025:\n  - Visibility/metrics: shift from subscriber counts to profitability metrics as primary streaming inputs — this increases model uncertainty for growth assumptions but reduces reliance on a single public KPI.\n  - Risk profile: parks international visitation weakness and carriage noise introduced downside near‑term revenue risk, even as streaming OI improvements validated parts of the buy case.\n  - Governance/strategy: CEO succession likely shifted emphasis toward Parks/experiences (D’Amaro background) and invites re‑forecasting of content/streaming strategy and capital allocation.\n  - Overall stance: based on available internal notes + public developments, the constructive thesis (Outperform) likely remained intact near Q1 FY26 but with more caveats and closer monitoring of parks visitation trends, carriage outcomes, and execution under new leadership. Market priced some of these concerns (notable share drops on Nov 13, 2025 and Feb 2–3, 2026).\n\nGaps & recommended next steps (to close the comparison definitively)\n1. Retrieve any internal Q1 FY26 (Jan–Mar 2026) memos, desk updates, or trading/strategy notes — none were located in the repo; fetch and summarize if they exist.\n2. If you want a direct “end‑of‑2025 vs Q1/2026” internal comparison: allow me to (a) pull any internal notes dated Feb–Mar 2026 or labeled “Q1/2026”, and (b) extract the precise changes in price target, EPS models, multiples, and explicit recommended actions.\n3. Optionally include the repo’s Q2 FY26 note (dated June 26, 2026) to show the first explicit internal follow‑up after the Q1 FY26 public events (it shows a lower target ~$125 and lower multiple — useful context if you want how the firm’s view evolved beyond Mar 31, 2026).\n\nIf you want, I can now:\n- Fetch any internal documents for Feb–Mar 2026 and produce a side‑by‑side table (Q4 FY25 vs internal Q1 FY26) with exact model changes; or\n- Pull the June 26, 2026 note and do a rapid comparison (Nov 13, 2025 → June 26, 2026) to show how the view evolved post‑Q1 FY26 public events. Which do you prefer?"
+          "output": "### Timeline: Internal assessment of Disney (DIS) through 2025\n\n| Date / note | Internal view | What changed in assessment | PT / valuation |\n|---|---|---|---|\n| **Post-Q2 FY25 note** | **Outperform**; constructive turnaround view | Disney was viewed as a recovery story: **DTC/streaming moving toward profitability** while **Experiences remained resilient**. Q2 beat/raise, improving ARPU, ESPN DTC initiatives, and FCF generation supported the thesis. Risks remained macro pressure, sports rights inflation, churn/ARPU uncertainty, and parks/capex execution. | **$120 PT**, ~19x FY26E EPS of ~$6.30; ~21% upside |\n| **Aug. 6, 2025 — Q3 FY25 note** | **Outperform**; confidence increased | Assessment became more confident after management raised FY25 adj. EPS guidance to **$5.85** and DTC profitability became more visible. Thesis shifted from “turnaround potential” to stronger conviction that **DTC profitability + durable Experiences** would drive multi-year EPS growth. Distribution deals, ESPN DTC launch plans, Star India JV benefits, and cruise/parks expansion were key catalysts. | **PT raised to $125**, ~19x FY26E EPS of ~$6.55 |\n| **Nov. 13, 2025 — Q4 FY25 note** | **Outperform**; conviction further increased | The thesis broadened from earnings recovery to **sustained EPS growth plus shareholder returns**. DTC margin expansion, record Experiences profit, stronger cash flow, ESPN DTC progress, and capital return were emphasized. The $7bn buyback authorization and $1.50 dividend were highlighted as valuation support. | **PT raised to $135**, ~19x FY27E EPS of ~$7.10 |\n\n### Net evolution in 2025\n\n- **Rating stayed Outperform throughout 2025.**\n- The internal view moved from **constructive turnaround** to **higher-conviction earnings recovery** to **multi-year EPS/FCF growth story with capital returns**.\n- The biggest drivers of increasing confidence were:\n  - Better-than-expected quarterly results and raised guidance.\n  - Clear progress in **DTC operating profitability**.\n  - Resilient **Experiences** performance.\n  - ESPN DTC and distribution catalysts.\n  - Star India deconsolidation/JV benefits.\n  - Buybacks and dividend announcement late in the year.\n- **Price target path:** **$120 → $125 → $135**.\n- Persistent risks across the year: macro/consumer weakness, parks cyclicality, sports rights inflation, streaming churn/ARPU risk, studio slate volatility, and capex/tax/timing risk.\n\nSources searched: internal Disney Q2 FY25, Q3 FY25, and Q4 FY25 research notes."
+        },
+        "pairedItem": {
+          "item": 0
         }
       }
     ],
-    "Updated Research Query": [
+    "Parse Verdict": [
       {
         "json": {
-          "query": "How did our internal assessment of Disney change during the course of 2025 and how does that compare to Q1/2026?",
-          "round": 1,
-          "findings": "Round 0 Findings:\n==================\nExecutive summary\n- During 2025 our internal view of Disney stayed consistently constructive: Outperform rating every quarter, rising price targets (≈$115 → $135) and progressive EPS upgrades driven by streaming margin inflection, studio recovery and strong Parks cash flow. \n- As of Q1 FY2026 (quarter ended Dec. 27, 2025) we have no internally‑dated “Q1/2026” investment note in the repo; the most recent internal view in the window is the Q4 FY25 note (Nov 13, 2025). Public events around Q1 FY26 (Feb 2–3, 2026) — notably Disney stopping quarterly paid‑subscriber disclosures, parks/international visitation headwinds, and CEO succession — introduced new uncertainty and shifted the evidence base from subscriber volumes to profitability and leadership execution.\n\nWhat our internal notes show (Jan–Nov 2025)\n- Q1 FY25 note (covers results Feb 5, 2025)\n  - Tone: constructive; rating Outperform.\n  - 12‑month target: ≈ $115.\n  - Modeling: FY25 adj. EPS ≈ $5.39 → FY26E adj. EPS ≈ $5.99.\n  - Drivers called out: early streaming stabilization; parks recovery.\n  - Action: maintain constructive stance. (documents/disney_q1_fy25_research_note.pdf)\n- Q2 FY25 note (mid‑2025 earnings review)\n  - Tone: constructive; modest target lift to ≈ $120.\n  - Management raised FY25 adj. EPS guidance; FY26E EPS ≈ $6.30 used in modeling.\n  - Drivers: improving DTC economics and parks momentum. (documents/disney_q2_fy25_research_note.pdf)\n- Q3 FY25 note (Aug 6, 2025)\n  - Tone: constructive; target ≈ $125.\n  - FY26E adj. EPS ≈ $6.55; highlights streaming margin inflection and Experiences strength. (documents/disney_q3_fy25_research_note.pdf)\n- Q4 FY25 note (Nov 13, 2025) — latest internal note in repo before Mar 31, 2026\n  - Tone: constructive/positive; rating Outperform.\n  - 12‑month target: ≈ $135.\n  - FY25 adj. EPS reported ≈ $5.93; FY27E adj. EPS used in valuation (~$7.10) with implied multiples ≈ ~19x.\n  - Drivers: DTC profitability inflection, record Parks cash generation, studio tailwinds, improving FCF enabling capital returns.\n  - Action: continue Outperform, monitor ESPN rights timing, capex/cruise spend, and DTC margin progress. (documents/disney_q4_fy25_research_note.pdf)\n\nNet change through 2025\n- Upgrades in near‑term EPS and higher price targets each quarter as results / guidance and streaming margin progress outperformed prior internal assumptions.\n- Consistent buy case: streaming margin inflection + durable Parks cash flow = higher confidence in FCF-driven returns.\n- Persistent monitoring items: carriage/distribution risk, ESPN rights/costs, India/JioStar/impairment comparability, and capex timing for parks/cruise.\n\nHow Q1 FY2026 (public events) affected the picture vs end‑of‑2025\n- Repo status: no internal Q1 FY26 “investment note” or “Q1/2026” file was found for Jan 1–Mar 31, 2026. The Q4 FY25 note (Nov 13) is the last internal position in the requested window. (file list from repo)\n- Public events that materially change inputs after Q4 FY25:\n  - June 28, 2025 (filed earlier, but implemented for Q1 FY26 reporting): Disney stopped reporting quarterly paid‑subscriber counts/ARPU publicly → reduces visibility into growth/churn; forces internal forecasts to rely more on company‑reported OI/margins than subs. (SEC filing)\n  - Oct–Nov 2025: YouTube TV carriage dispute (temporary blackout) and Oct. 29 closing of Hulu+LiveTV/Fubo deal → near‑term distribution/affiliate revenue noise referenced in Q4/Q1 commentary.\n  - Feb 2, 2026 (Q1 FY26 release): Company highlighted SVOD operating income improvement but flagged international visitation headwinds in Parks; last public subscriber totals remained those reported as of Sept. 27, 2025. (press release)\n  - Feb 3, 2026: CEO succession announced (Josh D’Amaro named CEO; Dana Walden President & CCO) → prompts reassessment of strategic priorities and execution risk.\n- Practical impacts on internal assessment vs end‑2025:\n  - Visibility/metrics: shift from subscriber counts to profitability metrics as primary streaming inputs — this increases model uncertainty for growth assumptions but reduces reliance on a single public KPI.\n  - Risk profile: parks international visitation weakness and carriage noise introduced downside near‑term revenue risk, even as streaming OI improvements validated parts of the buy case.\n  - Governance/strategy: CEO succession likely shifted emphasis toward Parks/experiences (D’Amaro background) and invites re‑forecasting of content/streaming strategy and capital allocation.\n  - Overall stance: based on available internal notes + public developments, the constructive thesis (Outperform) likely remained intact near Q1 FY26 but with more caveats and closer monitoring of parks visitation trends, carriage outcomes, and execution under new leadership. Market priced some of these concerns (notable share drops on Nov 13, 2025 and Feb 2–3, 2026).\n\nGaps & recommended next steps (to close the comparison definitively)\n1. Retrieve any internal Q1 FY26 (Jan–Mar 2026) memos, desk updates, or trading/strategy notes — none were located in the repo; fetch and summarize if they exist.\n2. If you want a direct “end‑of‑2025 vs Q1/2026” internal comparison: allow me to (a) pull any internal notes dated Feb–Mar 2026 or labeled “Q1/2026”, and (b) extract the precise changes in price target, EPS models, multiples, and explicit recommended actions.\n3. Optionally include the repo’s Q2 FY26 note (dated June 26, 2026) to show the first explicit internal follow‑up after the Q1 FY26 public events (it shows a lower target ~$125 and lower multiple — useful context if you want how the firm’s view evolved beyond Mar 31, 2026).\n\nIf you want, I can now:\n- Fetch any internal documents for Feb–Mar 2026 and produce a side‑by‑side table (Q4 FY25 vs internal Q1 FY26) with exact model changes; or\n- Pull the June 26, 2026 note and do a rapid comparison (Nov 13, 2025 → June 26, 2026) to show how the view evolved post‑Q1 FY26 public events. Which do you prefer?\n\n",
-          "gaps": "Missing any internally‑dated Q1 FY2026 (Jan–Mar 2026) investment memos, desk updates, or trading notes — the repo contains no file explicitly labeled Q1/2026 in the requested window. Without those internal documents we cannot confirm whether the firm formally changed rating, price target, EPS models, multiples, or explicit recommended actions in Q1 FY26. Specifically missing: (a) any Feb–Mar 2026 internal research/strategy note(s) with model tables, price‑target updates or explicit action calls; (b) any short desk/trading alerts or meeting notes referencing the Feb 2–3, 2026 public events; and (c) an explicit internal Q1/2026 valuation or recommendation that would allow a numeric side‑by‑side comparison vs. the Nov 13, 2025 (Q4 FY25) note."
+          "done": true,
+          "gaps": "",
+          "reasoning": "I verified the internal findings against the internal research notes and public filings/press releases. Using List_Files1 and File_Q_A1 I confirmed the internal notes (disney_q1_fy25_research_note.pdf, disney_q2_fy25_research_note.pdf, disney_q3_fy25_research_note.pdf, disney_q4_fy25_research_note.pdf) and the specific claims (ratings = Outperform in each note; 12‑mo PTs $115 → $120 → $125 → $135; Q2 DTC OI $336mm; Q3 management FY25 adj. EPS guide to $5.85; Q4 buyback authorization ~$7bn and dividend ~$1.50; DTC profitability statements and Experiences strength). I also cross‑checked public sources (Disney investor press releases and SEC filings) which corroborate DTC operating income, the Star India JV deconsolidation, the August 2025 ESPN DTC activity, and the November 2025 capital return announcements. All load‑bearing claims in the provided timeline were verified, so the findings do fully answer the research question."
         },
         "pairedItem": {
           "item": 0
@@ -655,7 +651,7 @@
     "Critique Agent": [
       {
         "json": {
-          "output": "{\"done\":false,\"gaps\":\"Missing any internally‑dated Q1 FY2026 (Jan–Mar 2026) investment memos, desk updates, or trading notes — the repo contains no file explicitly labeled Q1/2026 in the requested window. Without those internal documents we cannot confirm whether the firm formally changed rating, price target, EPS models, multiples, or explicit recommended actions in Q1 FY26. Specifically missing: (a) any Feb–Mar 2026 internal research/strategy note(s) with model tables, price‑target updates or explicit action calls; (b) any short desk/trading alerts or meeting notes referencing the Feb 2–3, 2026 public events; and (c) an explicit internal Q1/2026 valuation or recommendation that would allow a numeric side‑by‑side comparison vs. the Nov 13, 2025 (Q4 FY25) note.\",\"reasoning\":\"What I checked: I (1) listed the repo and located the Q1–Q4 FY25 internal research notes and used a File Q&A to extract the Q4 FY25 report’s rating, $135 12‑month target, and EPS/multiples assumptions from disney_q4_fy25_research_note.pdf (internal repo extract). I then web‑checked the key public events cited in your findings: Disney’s decision to stop quarterly paid‑subscriber/ARPU disclosures (announced in August 2025; implemented for Q1 FY26 for Disney+ and Hulu). ([thewrap.com](https://www.thewrap.com/disney-hulu-espn-stop-reporting-subscribers-average-revenue-per-user/?utm_source=openai)) I verified the last publicly reported paid‑subscriber totals were as of September 27, 2025 (Disney’s filings show ~131.6m Disney+ and ~64.1m Hulu as of Sept. 27, 2025). ([sec.gov](https://www.sec.gov/Archives/edgar/data/1744489/000174448925000155/dis-20250927.htm?utm_source=openai)) I confirmed the Q1 FY2026 earnings release was issued Feb. 2, 2026 (first quarter ended Dec. 27, 2025) and that it emphasized SVOD operating income improvement and Experiences/Parks commentary. ([barchart.com](https://www.barchart.com/story/news/37354926/the-walt-disney-company-reports-first-quarter-earnings-for-fiscal-2026?utm_source=openai)) I also verified the CEO succession announcement (Josh D’Amaro elected CEO; Dana Walden named President & CCO) was made Feb. 3, 2026 (effective March 18, 2026). ([thewaltdisneycompany.com](https://thewaltdisneycompany.com/news/disney-ceo-announcement/?utm_source=openai)) Finally, the YouTube TV carriage blackout and later resolution (late Oct–mid Nov 2025) is confirmed by contemporaneous reporting. ([investing.com](https://www.investing.com/news/stock-market-news/espn-abc-other-disney-networks-to-go-dark-on-youtube-tv-after-failed-talks-media-reports-4322304?utm_source=openai)) Why not done: your supplied findings accurately summarize the internal stance through Q4 FY25 (constructive/Outperform, rising targets and EPS upgrades) and correctly note the public events that introduced new uncertainty in Q1 FY26 — I verified those events. However, the research question asks for “How did our internal assessment change during 2025 and how does that compare to Q1/2026?” To answer that definitively we need the firm’s internal Q1 FY26 documents (Feb–Mar 2026) or any desk/trading notes that record explicit Q1/2026 model or recommendation changes. Those internal artifacts are missing from the repo (you noted the same). Because I could not verify any internal Q1/2026 changes (numeric or directive), I must mark the review incomplete and recommend retrieving the Feb–Mar 2026 internal materials (or, alternatively, the June 26, 2026 Q2 FY26 note you referenced) to close the gap and produce a definitive side‑by‑side comparison.\"}"
+          "output": "{\"done\":true,\"gaps\":\"\",\"reasoning\":\"I verified the internal findings against the internal research notes and public filings/press releases. Using List_Files1 and File_Q_A1 I confirmed the internal notes (disney_q1_fy25_research_note.pdf, disney_q2_fy25_research_note.pdf, disney_q3_fy25_research_note.pdf, disney_q4_fy25_research_note.pdf) and the specific claims (ratings = Outperform in each note; 12‑mo PTs $115 → $120 → $125 → $135; Q2 DTC OI $336mm; Q3 management FY25 adj. EPS guide to $5.85; Q4 buyback authorization ~$7bn and dividend ~$1.50; DTC profitability statements and Experiences strength). I also cross‑checked public sources (Disney investor press releases and SEC filings) which corroborate DTC operating income, the Star India JV deconsolidation, the August 2025 ESPN DTC activity, and the November 2025 capital return announcements. All load‑bearing claims in the provided timeline were verified, so the findings do fully answer the research question.\"}"
         },
         "pairedItem": {
           "item": 0
@@ -665,19 +661,7 @@
     "Research": [
       {
         "json": {
-          "output": "Executive summary\n- During 2025 our internal view of Disney stayed consistently constructive: Outperform rating every quarter, rising price targets (≈$115 → $135) and progressive EPS upgrades driven by streaming margin inflection, studio recovery and strong Parks cash flow. \n- As of Q1 FY2026 (quarter ended Dec. 27, 2025) we have no internally‑dated “Q1/2026” investment note in the repo; the most recent internal view in the window is the Q4 FY25 note (Nov 13, 2025). Public events around Q1 FY26 (Feb 2–3, 2026) — notably Disney stopping quarterly paid‑subscriber disclosures, parks/international visitation headwinds, and CEO succession — introduced new uncertainty and shifted the evidence base from subscriber volumes to profitability and leadership execution.\n\nWhat our internal notes show (Jan–Nov 2025)\n- Q1 FY25 note (covers results Feb 5, 2025)\n  - Tone: constructive; rating Outperform.\n  - 12‑month target: ≈ $115.\n  - Modeling: FY25 adj. EPS ≈ $5.39 → FY26E adj. EPS ≈ $5.99.\n  - Drivers called out: early streaming stabilization; parks recovery.\n  - Action: maintain constructive stance. (documents/disney_q1_fy25_research_note.pdf)\n- Q2 FY25 note (mid‑2025 earnings review)\n  - Tone: constructive; modest target lift to ≈ $120.\n  - Management raised FY25 adj. EPS guidance; FY26E EPS ≈ $6.30 used in modeling.\n  - Drivers: improving DTC economics and parks momentum. (documents/disney_q2_fy25_research_note.pdf)\n- Q3 FY25 note (Aug 6, 2025)\n  - Tone: constructive; target ≈ $125.\n  - FY26E adj. EPS ≈ $6.55; highlights streaming margin inflection and Experiences strength. (documents/disney_q3_fy25_research_note.pdf)\n- Q4 FY25 note (Nov 13, 2025) — latest internal note in repo before Mar 31, 2026\n  - Tone: constructive/positive; rating Outperform.\n  - 12‑month target: ≈ $135.\n  - FY25 adj. EPS reported ≈ $5.93; FY27E adj. EPS used in valuation (~$7.10) with implied multiples ≈ ~19x.\n  - Drivers: DTC profitability inflection, record Parks cash generation, studio tailwinds, improving FCF enabling capital returns.\n  - Action: continue Outperform, monitor ESPN rights timing, capex/cruise spend, and DTC margin progress. (documents/disney_q4_fy25_research_note.pdf)\n\nNet change through 2025\n- Upgrades in near‑term EPS and higher price targets each quarter as results / guidance and streaming margin progress outperformed prior internal assumptions.\n- Consistent buy case: streaming margin inflection + durable Parks cash flow = higher confidence in FCF-driven returns.\n- Persistent monitoring items: carriage/distribution risk, ESPN rights/costs, India/JioStar/impairment comparability, and capex timing for parks/cruise.\n\nHow Q1 FY2026 (public events) affected the picture vs end‑of‑2025\n- Repo status: no internal Q1 FY26 “investment note” or “Q1/2026” file was found for Jan 1–Mar 31, 2026. The Q4 FY25 note (Nov 13) is the last internal position in the requested window. (file list from repo)\n- Public events that materially change inputs after Q4 FY25:\n  - June 28, 2025 (filed earlier, but implemented for Q1 FY26 reporting): Disney stopped reporting quarterly paid‑subscriber counts/ARPU publicly → reduces visibility into growth/churn; forces internal forecasts to rely more on company‑reported OI/margins than subs. (SEC filing)\n  - Oct–Nov 2025: YouTube TV carriage dispute (temporary blackout) and Oct. 29 closing of Hulu+LiveTV/Fubo deal → near‑term distribution/affiliate revenue noise referenced in Q4/Q1 commentary.\n  - Feb 2, 2026 (Q1 FY26 release): Company highlighted SVOD operating income improvement but flagged international visitation headwinds in Parks; last public subscriber totals remained those reported as of Sept. 27, 2025. (press release)\n  - Feb 3, 2026: CEO succession announced (Josh D’Amaro named CEO; Dana Walden President & CCO) → prompts reassessment of strategic priorities and execution risk.\n- Practical impacts on internal assessment vs end‑2025:\n  - Visibility/metrics: shift from subscriber counts to profitability metrics as primary streaming inputs — this increases model uncertainty for growth assumptions but reduces reliance on a single public KPI.\n  - Risk profile: parks international visitation weakness and carriage noise introduced downside near‑term revenue risk, even as streaming OI improvements validated parts of the buy case.\n  - Governance/strategy: CEO succession likely shifted emphasis toward Parks/experiences (D’Amaro background) and invites re‑forecasting of content/streaming strategy and capital allocation.\n  - Overall stance: based on available internal notes + public developments, the constructive thesis (Outperform) likely remained intact near Q1 FY26 but with more caveats and closer monitoring of parks visitation trends, carriage outcomes, and execution under new leadership. Market priced some of these concerns (notable share drops on Nov 13, 2025 and Feb 2–3, 2026).\n\nGaps & recommended next steps (to close the comparison definitively)\n1. Retrieve any internal Q1 FY26 (Jan–Mar 2026) memos, desk updates, or trading/strategy notes — none were located in the repo; fetch and summarize if they exist.\n2. If you want a direct “end‑of‑2025 vs Q1/2026” internal comparison: allow me to (a) pull any internal notes dated Feb–Mar 2026 or labeled “Q1/2026”, and (b) extract the precise changes in price target, EPS models, multiples, and explicit recommended actions.\n3. Optionally include the repo’s Q2 FY26 note (dated June 26, 2026) to show the first explicit internal follow‑up after the Q1 FY26 public events (it shows a lower target ~$125 and lower multiple — useful context if you want how the firm’s view evolved beyond Mar 31, 2026).\n\nIf you want, I can now:\n- Fetch any internal documents for Feb–Mar 2026 and produce a side‑by‑side table (Q4 FY25 vs internal Q1 FY26) with exact model changes; or\n- Pull the June 26, 2026 note and do a rapid comparison (Nov 13, 2025 → June 26, 2026) to show how the view evolved post‑Q1 FY26 public events. Which do you prefer?"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ],
-    "Round Start": [
-      {
-        "json": {
-          "query": "How did our internal assessment of Disney change during the course of 2025 and how does that compare to Q1/2026?",
-          "findings": "",
-          "round": 0
+          "output": "### Timeline: Internal assessment of Disney (DIS) through 2025\n\n| Date / note | Internal view | What changed in assessment | PT / valuation |\n|---|---|---|---|\n| **Post-Q2 FY25 note** | **Outperform**; constructive turnaround view | Disney was viewed as a recovery story: **DTC/streaming moving toward profitability** while **Experiences remained resilient**. Q2 beat/raise, improving ARPU, ESPN DTC initiatives, and FCF generation supported the thesis. Risks remained macro pressure, sports rights inflation, churn/ARPU uncertainty, and parks/capex execution. | **$120 PT**, ~19x FY26E EPS of ~$6.30; ~21% upside |\n| **Aug. 6, 2025 — Q3 FY25 note** | **Outperform**; confidence increased | Assessment became more confident after management raised FY25 adj. EPS guidance to **$5.85** and DTC profitability became more visible. Thesis shifted from “turnaround potential” to stronger conviction that **DTC profitability + durable Experiences** would drive multi-year EPS growth. Distribution deals, ESPN DTC launch plans, Star India JV benefits, and cruise/parks expansion were key catalysts. | **PT raised to $125**, ~19x FY26E EPS of ~$6.55 |\n| **Nov. 13, 2025 — Q4 FY25 note** | **Outperform**; conviction further increased | The thesis broadened from earnings recovery to **sustained EPS growth plus shareholder returns**. DTC margin expansion, record Experiences profit, stronger cash flow, ESPN DTC progress, and capital return were emphasized. The $7bn buyback authorization and $1.50 dividend were highlighted as valuation support. | **PT raised to $135**, ~19x FY27E EPS of ~$7.10 |\n\n### Net evolution in 2025\n\n- **Rating stayed Outperform throughout 2025.**\n- The internal view moved from **constructive turnaround** to **higher-conviction earnings recovery** to **multi-year EPS/FCF growth story with capital returns**.\n- The biggest drivers of increasing confidence were:\n  - Better-than-expected quarterly results and raised guidance.\n  - Clear progress in **DTC operating profitability**.\n  - Resilient **Experiences** performance.\n  - ESPN DTC and distribution catalysts.\n  - Star India deconsolidation/JV benefits.\n  - Buybacks and dividend announcement late in the year.\n- **Price target path:** **$120 → $125 → $135**.\n- Persistent risks across the year: macro/consumer weakness, parks cyclicality, sports rights inflation, streaming churn/ARPU risk, studio slate volatility, and capex/tax/timing risk.\n\nSources searched: internal Disney Q2 FY25, Q3 FY25, and Q4 FY25 research notes."
         },
         "pairedItem": {
           "item": 0
@@ -687,9 +671,9 @@
     "Define Research Query": [
       {
         "json": {
-          "query": "How did our internal assessment of Disney change during the course of 2025 and how does that compare to Q1/2026?",
-          "findings": "",
-          "round": 0
+          "query": "Give me a timeline of how our internal assessment of Disney changed throughout 2025.",
+          "round": 0,
+          "findings": ""
         },
         "pairedItem": {
           "item": 0
@@ -698,45 +682,12 @@
     ]
   },
   "connections": {
-    "Start Research": {
+    "When clicking ‘Execute workflow’": {
       "main": [
         [
           {
             "node": "Define Research Query",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Critique Agent": {
-      "main": [
-        [
-          {
-            "node": "Parse Verdict",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Critique Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Critique Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Web Search Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Web Search Agent",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -764,11 +715,51 @@
         ]
       ]
     },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Critique Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Verdict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Parse Verdict": {
       "main": [
         [
           {
-            "node": "Done?",
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Updated Research Query",
             "type": "main",
             "index": 0
           }
@@ -797,51 +788,11 @@
         ]
       ]
     },
-    "Done?": {
-      "main": [
-        [
-          {
-            "node": "Output",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Updated Research Query",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "List Files": {
       "ai_tool": [
         [
           {
             "node": "File Q&A Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "File Q&A1": {
-      "ai_tool": [
-        [
-          {
-            "node": "Critique Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "List Files1": {
-      "ai_tool": [
-        [
-          {
-            "node": "Critique Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -859,12 +810,45 @@
         ]
       ]
     },
+    "List Files1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Q&A1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Critique Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Web Search Agent": {
       "ai_tool": [
         [
           {
             "node": "Research",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web search model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Web Search Agent",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -881,6 +865,17 @@
         ]
       ]
     },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "File Q&A Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Orchestrator Model": {
       "ai_languageModel": [
         [
@@ -892,44 +887,33 @@
         ]
       ]
     },
-    "Q&A Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "File Q&A Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Output": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Report Writer",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "OpenAI Chat Model": {
+    "OpenAI Chat Model2": {
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "Report Writer",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "Save report to Github": {
+    "Create a file in GitHub": {
       "ai_tool": [
         [
           {
-            "node": "AI Agent",
+            "node": "Report Writer",
             "type": "ai_tool",
             "index": 0
           }
@@ -943,12 +927,12 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "5e6fed47-f59c-4471-9a54-0abae26e1a85",
+  "versionId": "cf9fba89-7166-4c0e-b5d3-572d9b62cdc4",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "94e1edcc34a91a151fc2ec1b99597068a304e37fdb946fc806f00f97776fce3a"
+    "instanceId": "d4a4b34dba3ee3b7962c8920f1d1ae2e83302284e2d9036f405c172286e6d2fe"
   },
   "nodeGroups": [],
-  "id": "P8M26aTsnft25ZE4",
+  "id": "96p2YxAgBxyyRv2i",
   "tags": []
 }
