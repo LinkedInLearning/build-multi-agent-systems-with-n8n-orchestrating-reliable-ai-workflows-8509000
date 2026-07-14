@@ -349,13 +349,13 @@
     },
     {
       "parameters": {
-        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link including token. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
         "workflowId": {
           "__rl": true,
           "value": "F8G715YMeX4SXbIL",
           "mode": "list",
           "cachedResultUrl": "/workflow/F8G715YMeX4SXbIL",
-          "cachedResultName": "LiL Multi-Agent – Tool: File Q&A with OpenAI"
+          "cachedResultName": "02_02 File Q&A Tool"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -755,7 +755,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "afaeddab-eadf-40f0-b8fb-cd19df11fc03",
+  "versionId": "b8aed2e2-52b3-4e61-b0bc-991cadb86ad1",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "94e1edcc34a91a151fc2ec1b99597068a304e37fdb946fc806f00f97776fce3a"
