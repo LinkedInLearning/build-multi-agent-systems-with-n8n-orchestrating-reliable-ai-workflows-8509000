@@ -51,5 +51,7 @@ Did Disney release Q2 Earnings in 2026?
 Do we have a research note on Netflix?
 ```
 
-
+```
+Compare our internal assessment of Disney in Q1/2025 with how the numbers turned out for Q1/2026.
+```
 
