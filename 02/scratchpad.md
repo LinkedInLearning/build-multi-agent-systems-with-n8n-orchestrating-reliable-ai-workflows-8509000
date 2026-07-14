@@ -32,7 +32,7 @@ List available internal files
 - Repository Owner: `YOUR NAME` or `LinkedIn Learning`
 - Repository Name:
 ```
-build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000`
+build-multi-agent-systems-with-n8n-orchestrating-reliable-ai-workflows-8509000
 ```
 - Path: `documents/`
 
