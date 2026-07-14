@@ -152,7 +152,7 @@
         "promptType": "define",
         "text": "=Research question: {{ $json.query }}\n\nPrevious findings: \n{{ $json.findings}}\n\nPrevious gaps:\n{{ $json.gaps }}\n",
         "options": {
-          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, you have access to the following tools:\n- Web search: search the web for real-time answers\n- List files: see which internal files are available\n- File Q&A: Given a download URL you can ask a question against that file by making a call to an OpenAI API\n\nAnswer in a short, concise way."
+          "systemMessage": "You are a research agent running ONE round of a larger research process\n\nYour job is to make concrete progress on the research question, prioritizing the open gaps provided.\n\nTo perform the research, coordinate the following specialist sub-agents available to you as tools:\n- Web Search Agent – open web (LLM-based). Use for real-time, external information search.\n- File Research Agent – Access to internal documents (e.g., analyst notes). Use for internal information requests.\n\nAnswer in a short, concise way."
         }
       },
       "id": "54060e13-e662-47b3-acd3-f649c8f2495f",
@@ -349,7 +349,7 @@
     },
     {
       "parameters": {
-        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link. The response will be a short list with the required information from the source document as well as the source file for citation.",
+        "description": "Call this tool for simple file Q&A. You need to provide a short question as well as an active (recent) Github download link including token. The response will be a short list with the required information from the source document as well as the source file for citation.",
         "workflowId": {
           "__rl": true,
           "value": "F8G715YMeX4SXbIL",
@@ -407,7 +407,7 @@
           "value": "F8G715YMeX4SXbIL",
           "mode": "list",
           "cachedResultUrl": "/workflow/F8G715YMeX4SXbIL",
-          "cachedResultName": "LiL Multi-Agent – Tool: File Q&A with OpenAI"
+          "cachedResultName": "02_02 File Q&A Tool"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
@@ -755,7 +755,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "e8de573c-68fe-468a-ad24-edcc38c68119",
+  "versionId": "afaeddab-eadf-40f0-b8fb-cd19df11fc03",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "94e1edcc34a91a151fc2ec1b99597068a304e37fdb946fc806f00f97776fce3a"
