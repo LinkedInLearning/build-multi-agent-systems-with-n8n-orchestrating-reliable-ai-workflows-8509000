@@ -12,12 +12,6 @@ This is the repository for the LinkedIn Learning course `Build Multi‑Agent Sys
 - Configure memory (buffer and vector store) and use it to generate a complete research report.
 - Deploy and monitor the workflow using n8n’s execution history, activation, and oversight nodes.
 
-## Installing
-1. To use these exercise files, you must have the following installed:
-	- [list of requirements for course]
-2. Clone this repository into your local machine using the terminal (Mac), CMD (Windows), or a GUI tool like SourceTree.
-3. [Course-specific instructions]
-
 ## Instructor
 
 Tobias Zwingmann - AI Expert, Author, Keynote Speaker
